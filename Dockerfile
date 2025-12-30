@@ -10,8 +10,7 @@ COPY *.go ./
 
 RUN CGO_ENABLED=0 go build -ldflags "-w -s" -o /todotxt
 
-# hadolint ignore=DL3007
-FROM alpine:latest AS deploy
+FROM gcr.io/distroless/static-debian13:nonroot AS deploy
 
 # hadolint ignore=DL3045
 COPY frontend/dist/spa /frontend/dist/spa/
