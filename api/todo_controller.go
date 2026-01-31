@@ -1,13 +1,15 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func TodoTodayController(c *fiber.Ctx) error {
-	return c.JSON(getTodos("today"))
+func TodoTodayController(c *gin.Context) {
+	c.JSON(http.StatusOK, getTodos("today"))
 }
 
-func TodoTinkeringController(c *fiber.Ctx) error {
-	return c.JSON(getTodos("tinkering"))
+func TodoTinkeringController(c *gin.Context) {
+	c.JSON(http.StatusOK, getTodos("tinkering"))
 }
