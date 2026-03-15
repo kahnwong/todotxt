@@ -1,20 +1,14 @@
 package main
 
 import (
-	"embed"
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kahnwong/todotxt/api"
 
-	"io/fs"
-	"net/http"
 	"os"
-	"strings"
 )
-
-//go:embed frontend/dist/spa
-var embedFS embed.FS
 
 func main() {
 	// init
@@ -27,27 +21,13 @@ func main() {
 	router.PUT("/api/todo/update-content", api.UpdateTodoContentController)
 
 	// Static routes
-	subFS, _ := fs.Sub(embedFS, "frontend/dist/spa")
-	staticServer := http.FS(subFS)
-	fileServer := http.FileServer(staticServer)
-
 	router.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
 
-		filePath := strings.TrimPrefix(path, "/")
-
-		if filePath == "" {
-			filePath = "index.html"
+		// If the path doesn't start with /api, try to serve static files
+		if !strings.HasPrefix(path, "/api") {
+			c.File("/frontend/dist/spa" + path) // [TODO] dev mode use `frontend/dist/spa`
 		}
-
-		file, err := subFS.Open(filePath)
-		if err == nil {
-			file.Close()
-			fileServer.ServeHTTP(c.Writer, c.Request)
-			return
-		}
-
-		c.FileFromFS("index.html", staticServer)
 	})
 
 	// start server

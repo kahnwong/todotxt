@@ -5,9 +5,9 @@ Web UI and API for todo.txt
 ## Usage
 
 ```bash
-cd frontend && yarn install && yarn build
+make build-frontend
 
-docker build -t todotxt.
+docker build -t todotxt .
 docker run \
   -p 3000:3000 \
   -v $(pwd)/todotxt:/opt/todotxt \

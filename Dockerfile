@@ -6,14 +6,16 @@ RUN go mod download
 
 COPY api ./api
 COPY *.go ./
-COPY frontend/dist/spa ./frontend/dist/spa
 
 RUN CGO_ENABLED=0 go build -ldflags "-w -s" -o /todotxt
 
-FROM gcr.io/distroless/static-debian13:nonroot AS deploy
+FROM gcr.io/distroless/static-debian13:debug AS deploy
+
+WORKDIR /
 
 # hadolint ignore=DL3045
-COPY --from=build /todotxt /
+COPY --from=build /todotxt .
+COPY frontend/dist/spa ./frontend/dist/spa
 
 EXPOSE 3000
 ENTRYPOINT ["/todotxt"]
