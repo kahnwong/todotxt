@@ -397,8 +397,10 @@ onUnmounted(() => {
 <style scoped>
 .kanban-page {
   background: #f6f8fa;
-  min-height: 100vh;
+  height: 100vh;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .kanban-board {
@@ -409,6 +411,9 @@ onUnmounted(() => {
   border-radius: 8px;
   border: 1px solid #e1e4e8;
   overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(100vh - 48px);
 }
 
 .board-header {
@@ -483,7 +488,7 @@ onUnmounted(() => {
 
 .lane-columns {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   min-height: 120px;
 }
 
@@ -506,8 +511,8 @@ onUnmounted(() => {
 .lane-column {
   padding: 12px;
   border-right: 1px solid #e1e4e8;
-  overflow-y: auto;
-  max-height: 400px;
+  min-width: 0;
+  overflow: hidden;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease;
@@ -586,6 +591,9 @@ onUnmounted(() => {
   line-height: 1.5;
   color: #24292f;
   word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 /* Scrollbar styling */
