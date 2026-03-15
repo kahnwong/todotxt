@@ -2,7 +2,7 @@
   "name": "todotxt",
   "version": "0.0.1",
   "description": "A frontend to display todo.txt content for today filter",
-  "productName": "todo.txt Frontend",
+  "productName": "todo.txt",
   "author": "Karn Wong <karn@karnwong.me>",
   "type": "module",
   "private": true,
@@ -15,6 +15,7 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
+    "@iconify/vue": "^5.0.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.13.5",
     "quasar": "^2.16.0",

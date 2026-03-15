@@ -5,12 +5,15 @@
       <div class="board-header">
         <div class="lane-label">Lane</div>
         <div class="column-header">
+          <Icon icon="mdi:inbox-multiple" class="column-icon column-icon-backlog" />
           <h3 class="column-title">Backlog</h3>
         </div>
         <div class="column-header">
+          <Icon icon="mdi:progress-clock" class="column-icon column-icon-progress" />
           <h3 class="column-title">In Progress</h3>
         </div>
         <div class="column-header">
+          <Icon icon="mdi:check-circle" class="column-icon column-icon-done" />
           <h3 class="column-title">Done</h3>
         </div>
       </div>
@@ -103,6 +106,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Icon } from '@iconify/vue'
 import type { Todo } from 'components/models'
 import axios from 'axios'
 
@@ -289,6 +293,24 @@ onUnmounted(() => {
 
 .column-header:last-child {
   border-right: none;
+}
+
+.column-icon {
+  font-size: 18px;
+  margin-right: 8px;
+  color: #57606a;
+}
+
+.column-icon-backlog {
+  color: #6c757d;
+}
+
+.column-icon-progress {
+  color: #f59e0b;
+}
+
+.column-icon-done {
+  color: #10b981;
 }
 
 .column-title {
