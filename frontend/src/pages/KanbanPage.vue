@@ -301,6 +301,53 @@ const updateHighlight = () => {
   highlightedText.value = text
 }
 
+const prependHttpsToUrls = (text: string): string => {
+  // Match URLs without protocol: domain.tld or subdomain.domain.tld
+  // Common TLDs and patterns that indicate a URL
+  const urlPattern = /\b([a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\b(\/[^\s]*)?/g
+
+  return text.replace(urlPattern, (match) => {
+    // Check if already has a protocol
+    const hasProtocol = /^(https?|ftp|ftps):\/\//i.test(match)
+    if (hasProtocol) {
+      return match
+    }
+
+    // Check if this looks like a file extension (e.g., file.txt)
+    // URLs typically have longer TLDs or paths after them
+    const parts = match.split('/')
+    const domain = parts[0]
+    if (!domain) {
+      return match
+    }
+
+    const lastDot = domain.lastIndexOf('.')
+    if (lastDot !== -1) {
+      const tld = domain.substring(lastDot + 1).toLowerCase()
+      // Common file extensions to exclude
+      const fileExtensions = [
+        'txt',
+        'pdf',
+        'doc',
+        'docx',
+        'xls',
+        'xlsx',
+        'jpg',
+        'png',
+        'gif',
+        'zip',
+        'tar',
+        'gz',
+      ]
+      if (fileExtensions.includes(tld) && parts.length === 1) {
+        return match
+      }
+    }
+
+    return `https://${match}`
+  })
+}
+
 const saveTodo = async () => {
   if (!editingTodo.value) return
 
@@ -309,6 +356,8 @@ const saveTodo = async () => {
     let textToSave = editedText.value.replace(/=backlog\b/g, '').trim()
     // Clean up multiple spaces
     textToSave = textToSave.replace(/\s+/g, ' ')
+    // Prepend https:// to URLs without protocol
+    textToSave = prependHttpsToUrls(textToSave)
 
     await axios.put('/api/todo/update-content', {
       id: editingTodo.value.id,
