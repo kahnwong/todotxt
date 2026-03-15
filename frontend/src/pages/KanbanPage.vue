@@ -23,13 +23,19 @@
         </div>
 
         <!-- Backlog Column -->
-        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'backlog', $event)">
+        <div
+          class="lane-column"
+          :class="{ 'drop-target': isDropTarget(lane.id, 'backlog') }"
+          @dragover="handleDragOver(lane.id, 'backlog', $event)"
+          @drop="handleDrop(lane, 'backlog', $event)"
+        >
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
             :key="todo.id"
             class="kanban-card"
             draggable="true"
             @dragstart="handleDragStart(todo, lane, $event)"
+            @dragend="handleDragEnd"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -42,13 +48,19 @@
         </div>
 
         <!-- In Progress Column -->
-        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'in-progress', $event)">
+        <div
+          class="lane-column"
+          :class="{ 'drop-target': isDropTarget(lane.id, 'in-progress') }"
+          @dragover="handleDragOver(lane.id, 'in-progress', $event)"
+          @drop="handleDrop(lane, 'in-progress', $event)"
+        >
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
             :key="todo.id"
             class="kanban-card"
             draggable="true"
             @dragstart="handleDragStart(todo, lane, $event)"
+            @dragend="handleDragEnd"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -61,13 +73,19 @@
         </div>
 
         <!-- Done Column -->
-        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'done', $event)">
+        <div
+          class="lane-column"
+          :class="{ 'drop-target': isDropTarget(lane.id, 'done') }"
+          @dragover="handleDragOver(lane.id, 'done', $event)"
+          @drop="handleDrop(lane, 'done', $event)"
+        >
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'done')"
             :key="todo.id"
             class="kanban-card"
             draggable="true"
             @dragstart="handleDragStart(todo, lane, $event)"
+            @dragend="handleDragEnd"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -132,6 +150,7 @@ interface DragData {
 }
 
 let dragData: DragData | null = null
+const dropTarget = ref<string | null>(null)
 
 const handleDragStart = (todo: Todo, lane: Lane, event: DragEvent) => {
   dragData = { todo, sourceLane: lane }
@@ -140,8 +159,18 @@ const handleDragStart = (todo: Todo, lane: Lane, event: DragEvent) => {
   }
 }
 
+const handleDragOver = (laneId: string, status: string, event: DragEvent) => {
+  event.preventDefault()
+  dropTarget.value = `${laneId}-${status}`
+}
+
+const handleDragEnd = () => {
+  dropTarget.value = null
+}
+
 const handleDrop = async (targetLane: Lane, targetStatus: string, event: DragEvent) => {
   event.preventDefault()
+  dropTarget.value = null
 
   if (!dragData) return
 
@@ -172,6 +201,10 @@ const handleDrop = async (targetLane: Lane, targetStatus: string, event: DragEve
   }
 
   dragData = null
+}
+
+const isDropTarget = (laneId: string, status: string): boolean => {
+  return dropTarget.value === `${laneId}-${status}`
 }
 
 const fetchTodoToday = async () => {
@@ -302,10 +335,19 @@ onUnmounted(() => {
   border-right: 1px solid #e1e4e8;
   overflow-y: auto;
   max-height: 400px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .lane-column:last-child {
   border-right: none;
+}
+
+.lane-column.drop-target {
+  background-color: #e8f5f7;
+  border: 2px dashed #4fa1ac;
+  border-right: 2px dashed #4fa1ac;
 }
 
 .kanban-card {
