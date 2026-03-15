@@ -130,7 +130,8 @@ func (ts *TodoService) tinkering() []Todo {
 	})
 }
 
-func (ts *TodoService) updateTodo(id int, newProject, newStatus, newContext string) error {
+// updateTodoByID is a generic helper that updates a specific todo line by ID
+func (ts *TodoService) updateTodoByID(id int, updateFunc func(line string) string) error {
 	// Read original file
 	todoPath := os.Getenv("TODO_PATH")
 	content, err := os.ReadFile(todoPath)
@@ -150,9 +151,7 @@ func (ts *TodoService) updateTodo(id int, newProject, newStatus, newContext stri
 
 		// Check if this is the todo we want to update
 		if currentID == id {
-			// Parse and update the line
-			updatedLine := ts.updateTodoLine(line, newProject, newStatus, newContext)
-			updatedLines = append(updatedLines, updatedLine)
+			updatedLines = append(updatedLines, updateFunc(line))
 		} else {
 			updatedLines = append(updatedLines, line)
 		}
@@ -169,41 +168,16 @@ func (ts *TodoService) updateTodo(id int, newProject, newStatus, newContext stri
 	return nil
 }
 
+func (ts *TodoService) updateTodo(id int, newProject, newStatus, newContext string) error {
+	return ts.updateTodoByID(id, func(line string) string {
+		return ts.updateTodoLine(line, newProject, newStatus, newContext)
+	})
+}
+
 func (ts *TodoService) updateTodoContent(id int, newText string) error {
-	// Read original file
-	todoPath := os.Getenv("TODO_PATH")
-	content, err := os.ReadFile(todoPath)
-	if err != nil {
-		return fmt.Errorf("error reading todo file: %w", err)
-	}
-
-	lines := strings.Split(string(content), "\n")
-	var updatedLines []string
-	currentID := 1
-
-	for _, line := range lines {
-		if strings.TrimSpace(line) == "" {
-			updatedLines = append(updatedLines, line)
-			continue
-		}
-
-		// Check if this is the todo we want to update
-		if currentID == id {
-			updatedLines = append(updatedLines, newText)
-		} else {
-			updatedLines = append(updatedLines, line)
-		}
-		currentID++
-	}
-
-	// Write back to file
-	newContent := strings.Join(updatedLines, "\n")
-	err = os.WriteFile(todoPath, []byte(newContent), 0644)
-	if err != nil {
-		return fmt.Errorf("error writing todo file: %w", err)
-	}
-
-	return nil
+	return ts.updateTodoByID(id, func(line string) string {
+		return newText
+	})
 }
 
 func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext string) string {
