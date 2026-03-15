@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	todo "github.com/1set/todotxt"
 )
@@ -164,9 +165,9 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus string) string
 	words := strings.Fields(line)
 	var updatedWords []string
 
-	// Remove existing project and status tags
+	// Remove existing project, status, and due tags
 	for _, word := range words {
-		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") {
+		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "due:") {
 			updatedWords = append(updatedWords, word)
 		}
 	}
@@ -180,6 +181,12 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus string) string
 
 	// Add new status tag
 	updatedWords = append(updatedWords, "="+newStatus)
+
+	// Add due date for in-progress and done status
+	if newStatus == "in-progress" || newStatus == "done" {
+		today := time.Now().Format("2006-01-02")
+		updatedWords = append(updatedWords, "due:"+today)
+	}
 
 	return strings.Join(updatedWords, " ")
 }
