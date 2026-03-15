@@ -121,7 +121,15 @@ const todoToday = ref<Todo[]>([])
 const todoTinkering = ref<Todo[]>([])
 
 const lanes = computed<Lane[]>(() => {
-  const laneList: Lane[] = [{ id: 'today', title: 'Today', todos: todoToday.value }]
+  // Filter today todos to exclude @tinkering tasks with projects
+  const filteredTodayTodos = todoToday.value.filter((todo) => {
+    const hasTinkering = todo.context === '@tinkering'
+    const hasProject = !!todo.project
+    // Exclude if both @tinkering and project exist
+    return !(hasTinkering && hasProject)
+  })
+
+  const laneList: Lane[] = [{ id: 'today', title: 'Today', todos: filteredTodayTodos }]
 
   // Group tinkering todos by project
   const projectGroups = new Map<string, Todo[]>()
