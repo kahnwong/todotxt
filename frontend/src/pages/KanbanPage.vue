@@ -3,17 +3,9 @@
     <div class="kanban-board">
       <!-- Column Headers -->
       <div class="board-header">
-        <div class="column-header">
-          <Icon icon="mdi:inbox-multiple" class="column-icon column-icon-backlog" />
-          <h3 class="column-title">Backlog</h3>
-        </div>
-        <div class="column-header">
-          <Icon icon="mdi:progress-clock" class="column-icon column-icon-progress" />
-          <h3 class="column-title">In Progress</h3>
-        </div>
-        <div class="column-header">
-          <Icon icon="mdi:check-circle" class="column-icon column-icon-done" />
-          <h3 class="column-title">Done</h3>
+        <div v-for="column in COLUMN_CONFIG" :key="column.id" class="column-header">
+          <Icon :icon="column.icon" class="column-icon" :class="column.iconClass" />
+          <h3 class="column-title">{{ column.title }}</h3>
         </div>
       </div>
 
@@ -25,59 +17,17 @@
         </div>
 
         <div class="lane-columns">
-          <!-- Backlog Column -->
+          <!-- Dynamic Columns -->
           <div
+            v-for="column in COLUMN_CONFIG"
+            :key="column.id"
             class="lane-column"
-            :class="{ 'drop-target': isDropTarget(lane.id, 'backlog') }"
-            @dragover="handleDragOver(lane.id, 'backlog', $event)"
-            @drop="handleDrop(lane, 'backlog', $event)"
+            :class="{ 'drop-target': isDropTarget(lane.id, column.id) }"
+            @dragover="handleDragOver(lane.id, column.id, $event)"
+            @drop="handleDrop(lane, column.id, $event)"
           >
             <div
-              v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
-              :key="todo.id"
-              class="kanban-card"
-              draggable="true"
-              @dragstart="handleDragStart(todo, lane, $event)"
-              @dragend="handleDragEnd"
-              @click="openEditDialog(todo)"
-            >
-              <div class="card-content">
-                <p class="card-text">{{ todo.todo }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- In Progress Column -->
-          <div
-            class="lane-column"
-            :class="{ 'drop-target': isDropTarget(lane.id, 'in-progress') }"
-            @dragover="handleDragOver(lane.id, 'in-progress', $event)"
-            @drop="handleDrop(lane, 'in-progress', $event)"
-          >
-            <div
-              v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
-              :key="todo.id"
-              class="kanban-card"
-              draggable="true"
-              @dragstart="handleDragStart(todo, lane, $event)"
-              @dragend="handleDragEnd"
-              @click="openEditDialog(todo)"
-            >
-              <div class="card-content">
-                <p class="card-text">{{ todo.todo }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Done Column -->
-          <div
-            class="lane-column"
-            :class="{ 'drop-target': isDropTarget(lane.id, 'done') }"
-            @dragover="handleDragOver(lane.id, 'done', $event)"
-            @drop="handleDrop(lane, 'done', $event)"
-          >
-            <div
-              v-for="todo in getTodosByStatus(lane.todos, 'done')"
+              v-for="todo in getTodosByStatus(lane.todos, column.id)"
               :key="todo.id"
               class="kanban-card"
               draggable="true"
@@ -123,130 +73,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import type { Todo } from 'components/models'
 import axios from 'axios'
-
-interface Lane {
-  id: string
-  title: string
-  todos: Todo[]
-}
+import { COLUMN_CONFIG, UPDATE_INTERVAL_MS } from '../constants/kanban'
+import { useLanes } from '../composables/useLanes'
+import { useDragDrop } from '../composables/useDragDrop'
+import { useTodoEdit } from '../composables/useTodoEdit'
 
 const todoToday = ref<Todo[]>([])
 const todoTinkering = ref<Todo[]>([])
 
-const lanes = computed<Lane[]>(() => {
-  // Filter today todos to exclude @tinkering tasks with projects
-  const filteredTodayTodos = todoToday.value.filter((todo) => {
-    const hasTinkering = todo.context === '@tinkering'
-    const hasProject = !!todo.project
-    // Exclude if both @tinkering and project exist
-    return !(hasTinkering && hasProject)
-  })
-
-  const laneList: Lane[] = [{ id: 'today', title: 'Today', todos: filteredTodayTodos }]
-
-  // Group tinkering todos by project
-  const projectGroups = new Map<string, Todo[]>()
-  todoTinkering.value.forEach((todo) => {
-    const project = todo.project || 'No Project'
-    if (!projectGroups.has(project)) {
-      projectGroups.set(project, [])
-    }
-    projectGroups.get(project)!.push(todo)
-  })
-
-  // Create a lane for each project
-  projectGroups.forEach((todos, project) => {
-    laneList.push({
-      id: `project-${project}`,
-      title: project.startsWith('+') ? project.slice(1) : project,
-      todos,
-    })
-  })
-
-  return laneList
-})
-
-const getTodosByStatus = (todos: Todo[], status: string): Todo[] => {
-  return todos.filter((todo) => todo.status === status)
-}
-
-interface DragData {
-  todo: Todo
-  sourceLane: Lane
-}
-
-let dragData: DragData | null = null
-const dropTarget = ref<string | null>(null)
-
-const handleDragStart = (todo: Todo, lane: Lane, event: DragEvent) => {
-  dragData = { todo, sourceLane: lane }
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
-  }
-}
-
-const handleDragOver = (laneId: string, status: string, event: DragEvent) => {
-  event.preventDefault()
-  dropTarget.value = `${laneId}-${status}`
-}
-
-const handleDragEnd = () => {
-  dropTarget.value = null
-}
-
-const handleDrop = async (targetLane: Lane, targetStatus: string, event: DragEvent) => {
-  event.preventDefault()
-  dropTarget.value = null
-
-  if (!dragData) return
-
-  const { todo, sourceLane } = dragData
-
-  // Check if anything changed
-  const sourceProject = sourceLane.id === 'today' ? '' : sourceLane.title
-  const targetProject = targetLane.id === 'today' ? '' : targetLane.title
-
-  if (todo.status === targetStatus && sourceProject === targetProject) {
-    dragData = null
-    return
-  }
-
-  // Determine context: add @tinkering when moving from Today to a project lane
-  let context = todo.context || ''
-  if (sourceLane.id === 'today' && targetLane.id !== 'today') {
-    // Moving from Today to a project lane - add @tinkering if not already present
-    if (!context.includes('tinkering')) {
-      context = '@tinkering'
-    }
-  }
-
-  try {
-    // Update via API
-    await axios.put('/api/todo/update', {
-      id: todo.id,
-      project: targetProject,
-      status: targetStatus,
-      context: context,
-    })
-
-    // Refresh data
-    await fetchTodoToday()
-    await fetchTodoTinkering()
-  } catch (error) {
-    console.error('Failed to update todo:', error)
-  }
-
-  dragData = null
-}
-
-const isDropTarget = (laneId: string, status: string): boolean => {
-  return dropTarget.value === `${laneId}-${status}`
-}
-
+// Fetch functions
 const fetchTodoToday = async () => {
   const response = await axios.get('/api/todo/today')
   todoToday.value = response.data as Todo[]
@@ -257,125 +96,19 @@ const fetchTodoTinkering = async () => {
   todoTinkering.value = response.data as Todo[]
 }
 
-// Edit dialog state
-const showEditDialog = ref(false)
-const editingTodo = ref<Todo | null>(null)
-const editedText = ref('')
-const highlightedText = ref('')
+// Use composables
+const { lanes, getTodosByStatus } = useLanes(todoToday, todoTinkering)
 
-const openEditDialog = (todo: Todo) => {
-  editingTodo.value = todo
-  // Reconstruct full todo text with tags in order: created_date +project content @context =status
-  const parts = []
-  if (todo.created_date) parts.push(todo.created_date)
-  if (todo.project) parts.push(todo.project)
-  parts.push(todo.todo)
-  if (todo.context) parts.push(todo.context)
-  // Don't append =backlog since it's the default state
-  if (todo.status && todo.status !== 'backlog') parts.push(`=${todo.status}`)
-  editedText.value = parts.join(' ')
-  updateHighlight()
-  showEditDialog.value = true
-}
+const { handleDragStart, handleDragOver, handleDragEnd, handleDrop, isDropTarget } = useDragDrop(
+  fetchTodoToday,
+  fetchTodoTinkering,
+)
 
-const updateHighlight = () => {
-  let text = editedText.value
-  // Escape HTML
-  text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const { showEditDialog, editedText, highlightedText, openEditDialog, updateHighlight, saveTodo } =
+  useTodoEdit(fetchTodoToday, fetchTodoTinkering)
 
-  // Highlight creation date (YYYY-MM-DD at start, not prefixed with due:)
-  text = text.replace(/^(\d{4}-\d{2}-\d{2})\b/g, '<span class="highlight-date">$1</span>')
-
-  // Highlight @context tags
-  text = text.replace(/(@\w+)/g, '<span class="highlight-context">$1</span>')
-
-  // Highlight +project tags
-  text = text.replace(/(\+\w+)/g, '<span class="highlight-project">$1</span>')
-
-  // Highlight =status tags
-  text = text.replace(/(=[\w-]+)/g, '<span class="highlight-status">$1</span>')
-
-  // Highlight due: tags
-  text = text.replace(/(due:\d{4}-\d{2}-\d{2})/g, '<span class="highlight-due">$1</span>')
-
-  highlightedText.value = text
-}
-
-const prependHttpsToUrls = (text: string): string => {
-  // Match URLs without protocol: domain.tld or subdomain.domain.tld
-  // Common TLDs and patterns that indicate a URL
-  const urlPattern = /\b([a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\b(\/[^\s]*)?/g
-
-  return text.replace(urlPattern, (match) => {
-    // Check if already has a protocol
-    const hasProtocol = /^(https?|ftp|ftps):\/\//i.test(match)
-    if (hasProtocol) {
-      return match
-    }
-
-    // Check if this looks like a file extension (e.g., file.txt)
-    // URLs typically have longer TLDs or paths after them
-    const parts = match.split('/')
-    const domain = parts[0]
-    if (!domain) {
-      return match
-    }
-
-    const lastDot = domain.lastIndexOf('.')
-    if (lastDot !== -1) {
-      const tld = domain.substring(lastDot + 1).toLowerCase()
-      // Common file extensions to exclude
-      const fileExtensions = [
-        'txt',
-        'pdf',
-        'doc',
-        'docx',
-        'xls',
-        'xlsx',
-        'jpg',
-        'png',
-        'gif',
-        'zip',
-        'tar',
-        'gz',
-      ]
-      if (fileExtensions.includes(tld) && parts.length === 1) {
-        return match
-      }
-    }
-
-    return `https://${match}`
-  })
-}
-
-const saveTodo = async () => {
-  if (!editingTodo.value) return
-
-  try {
-    // Remove =backlog since it's the default state
-    let textToSave = editedText.value.replace(/=backlog\b/g, '').trim()
-    // Clean up multiple spaces
-    textToSave = textToSave.replace(/\s+/g, ' ')
-    // Prepend https:// to URLs without protocol
-    textToSave = prependHttpsToUrls(textToSave)
-
-    await axios.put('/api/todo/update-content', {
-      id: editingTodo.value.id,
-      text: textToSave,
-    })
-
-    // Refresh data
-    await fetchTodoToday()
-    await fetchTodoTinkering()
-
-    showEditDialog.value = false
-  } catch (error) {
-    console.error('Failed to save todo:', error)
-  }
-}
-
+// Auto-refresh setup
 let updateInterval: number | null = null
-const UPDATE_INTERVAL_MS = 10000
 
 onMounted(() => {
   fetchTodoToday()
@@ -672,6 +405,11 @@ onUnmounted(() => {
 
 .highlight-due {
   color: #cf222e;
+  font-weight: 600;
+}
+
+.highlight-date {
+  color: #0969da;
   font-weight: 600;
 }
 </style>
