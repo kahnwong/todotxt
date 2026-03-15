@@ -1,0 +1,23 @@
+api/todo.go
+  ef0a1b396cdbeaca 133-134,154,171-174,177-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "581f15e7877dcb2f9ee6ebf8a59f04fcd600d8ca",
+  "prompts": {
+    "ef0a1b396cdbeaca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30db0523effeAwp6YTv2Ji12eN",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 12,
+      "total_deletions": 38,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
