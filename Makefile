@@ -1,7 +1,7 @@
 start-frontend:
-	cd frontend && yarn install && yarn dev
+	cd frontend && yarn dev
 start-backend:
 	go run .
 
 build-frontend:
-	cd frontend && yarn build
+	cd frontend && yarn install && yarn build
