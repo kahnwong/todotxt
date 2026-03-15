@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	todo "github.com/1set/todotxt"
 )
@@ -12,6 +13,7 @@ type Todo struct {
 	Context string `json:"context"`
 	Project string `json:"project"`
 	Todo    string `json:"todo"`
+	Status  string `json:"status"`
 }
 
 func parseTodos(tasks todo.TaskList) []Todo {
@@ -30,12 +32,29 @@ func parseTodos(tasks todo.TaskList) []Todo {
 			project = fmt.Sprintf("+%s", t.Projects[0])
 		}
 
+		// status - parse from todo text (e.g., =backlog, =in-progress, =done)
+		status := "backlog" // default status
+		words := strings.Fields(t.Todo)
+		var cleanedWords []string
+
+		for _, word := range words {
+			if strings.HasPrefix(word, "=") {
+				status = strings.TrimPrefix(word, "=")
+			} else {
+				cleanedWords = append(cleanedWords, word)
+			}
+		}
+
+		// Rebuild todo text without status tag
+		todoText := strings.Join(cleanedWords, " ")
+
 		// append
 		todos = append(todos, Todo{
 			t.ID,
 			context,
 			project,
-			t.Todo,
+			todoText,
+			status,
 		})
 	}
 

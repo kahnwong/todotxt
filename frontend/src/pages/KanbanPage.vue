@@ -24,7 +24,11 @@
 
         <!-- Backlog Column -->
         <div class="lane-column">
-          <div v-for="todo in lane.todos" :key="todo.id" class="kanban-card">
+          <div
+            v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
+            :key="todo.id"
+            class="kanban-card"
+          >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
               <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
@@ -37,12 +41,36 @@
 
         <!-- In Progress Column -->
         <div class="lane-column">
-          <!-- Empty for now -->
+          <div
+            v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
+            :key="todo.id"
+            class="kanban-card"
+          >
+            <div class="card-content">
+              <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
+              <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
+                todo.project
+              }}</span>
+              <p class="card-text">{{ todo.todo }}</p>
+            </div>
+          </div>
         </div>
 
         <!-- Done Column -->
         <div class="lane-column">
-          <!-- Empty for now -->
+          <div
+            v-for="todo in getTodosByStatus(lane.todos, 'done')"
+            :key="todo.id"
+            class="kanban-card"
+          >
+            <div class="card-content">
+              <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
+              <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
+                todo.project
+              }}</span>
+              <p class="card-text">{{ todo.todo }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -87,6 +115,10 @@ const lanes = computed<Lane[]>(() => {
 
   return laneList
 })
+
+const getTodosByStatus = (todos: Todo[], status: string): Todo[] => {
+  return todos.filter((todo) => todo.status === status)
+}
 
 const fetchTodoToday = async () => {
   const response = await axios.get('/api/todo/today')

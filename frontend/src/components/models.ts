@@ -3,4 +3,5 @@ export interface Todo {
   context: string
   project: string
   todo: string
+  status: string
 }
