@@ -39,6 +39,7 @@
               draggable="true"
               @dragstart="handleDragStart(todo, lane, $event)"
               @dragend="handleDragEnd"
+              @click="openEditDialog(todo)"
             >
               <div class="card-content">
                 <p class="card-text">{{ todo.todo }}</p>
@@ -60,6 +61,7 @@
               draggable="true"
               @dragstart="handleDragStart(todo, lane, $event)"
               @dragend="handleDragEnd"
+              @click="openEditDialog(todo)"
             >
               <div class="card-content">
                 <p class="card-text">{{ todo.todo }}</p>
@@ -81,6 +83,7 @@
               draggable="true"
               @dragstart="handleDragStart(todo, lane, $event)"
               @dragend="handleDragEnd"
+              @click="openEditDialog(todo)"
             >
               <div class="card-content">
                 <p class="card-text">{{ todo.todo }}</p>
@@ -90,6 +93,32 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Dialog -->
+    <q-dialog v-model="showEditDialog">
+      <q-card style="min-width: 500px">
+        <q-card-section>
+          <div class="text-h6">Edit Todo</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="editor-container">
+            <div class="syntax-highlight" v-html="highlightedText"></div>
+            <textarea
+              v-model="editedText"
+              class="editor-input"
+              @input="updateHighlight"
+              rows="5"
+            ></textarea>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Save" color="primary" @click="saveTodo" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -226,6 +255,64 @@ const fetchTodoToday = async () => {
 const fetchTodoTinkering = async () => {
   const response = await axios.get('/api/todo/tinkering')
   todoTinkering.value = response.data as Todo[]
+}
+
+// Edit dialog state
+const showEditDialog = ref(false)
+const editingTodo = ref<Todo | null>(null)
+const editedText = ref('')
+const highlightedText = ref('')
+
+const openEditDialog = (todo: Todo) => {
+  editingTodo.value = todo
+  // Reconstruct full todo text with tags in order: @context +project content =status
+  const parts = []
+  if (todo.context) parts.push(todo.context)
+  if (todo.project) parts.push(todo.project)
+  parts.push(todo.todo)
+  if (todo.status) parts.push(`=${todo.status}`)
+  editedText.value = parts.join(' ')
+  updateHighlight()
+  showEditDialog.value = true
+}
+
+const updateHighlight = () => {
+  let text = editedText.value
+  // Escape HTML
+  text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+  // Highlight @context tags
+  text = text.replace(/(@\w+)/g, '<span class="highlight-context">$1</span>')
+
+  // Highlight +project tags
+  text = text.replace(/(\+\w+)/g, '<span class="highlight-project">$1</span>')
+
+  // Highlight =status tags
+  text = text.replace(/(=[\w-]+)/g, '<span class="highlight-status">$1</span>')
+
+  // Highlight due: tags
+  text = text.replace(/(due:\d{4}-\d{2}-\d{2})/g, '<span class="highlight-due">$1</span>')
+
+  highlightedText.value = text
+}
+
+const saveTodo = async () => {
+  if (!editingTodo.value) return
+
+  try {
+    await axios.put('/api/todo/update-text', {
+      id: editingTodo.value.id,
+      text: editedText.value,
+    })
+
+    // Refresh data
+    await fetchTodoToday()
+    await fetchTodoTinkering()
+
+    showEditDialog.value = false
+  } catch (error) {
+    console.error('Failed to save todo:', error)
+  }
 }
 
 let updateInterval: number | null = null
@@ -458,5 +545,66 @@ onUnmounted(() => {
 
 .lane-column::-webkit-scrollbar-thumb:hover {
   background: #8c959f;
+}
+
+/* Editor styles */
+.editor-container {
+  position: relative;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.syntax-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+  pointer-events: none;
+  border: 1px solid transparent;
+}
+
+.editor-input {
+  position: relative;
+  width: 100%;
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background: transparent;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  resize: vertical;
+  color: #24292f;
+}
+
+.editor-input:focus {
+  outline: none;
+  border-color: #0969da;
+}
+
+/* Syntax highlighting colors */
+.highlight-context {
+  color: #4fa1ac;
+  font-weight: 600;
+}
+
+.highlight-project {
+  color: #c8aa6f;
+  font-weight: 600;
+}
+
+.highlight-status {
+  color: #8250df;
+  font-weight: 600;
+}
+
+.highlight-due {
+  color: #cf222e;
+  font-weight: 600;
 }
 </style>
