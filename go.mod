@@ -1,6 +1,6 @@
 module github.com/kahnwong/todotxt
 
-go 1.25.4
+go 1.26.2
 
 require (
 	github.com/1set/todotxt v0.0.4
