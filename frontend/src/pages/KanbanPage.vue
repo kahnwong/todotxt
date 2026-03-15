@@ -270,7 +270,8 @@ const openEditDialog = (todo: Todo) => {
   if (todo.context) parts.push(todo.context)
   if (todo.project) parts.push(todo.project)
   parts.push(todo.todo)
-  if (todo.status) parts.push(`=${todo.status}`)
+  // Don't append =backlog since it's the default state
+  if (todo.status && todo.status !== 'backlog') parts.push(`=${todo.status}`)
   editedText.value = parts.join(' ')
   updateHighlight()
   showEditDialog.value = true
@@ -300,9 +301,14 @@ const saveTodo = async () => {
   if (!editingTodo.value) return
 
   try {
+    // Remove =backlog since it's the default state
+    let textToSave = editedText.value.replace(/=backlog\b/g, '').trim()
+    // Clean up multiple spaces
+    textToSave = textToSave.replace(/\s+/g, ' ')
+
     await axios.put('/api/todo/update-text', {
       id: editingTodo.value.id,
-      text: editedText.value,
+      text: textToSave,
     })
 
     // Refresh data

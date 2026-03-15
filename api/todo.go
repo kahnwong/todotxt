@@ -223,8 +223,10 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 		updatedWords = append(updatedWords, "+"+project)
 	}
 
-	// Add new status tag
-	updatedWords = append(updatedWords, "="+newStatus)
+	// Add new status tag (skip =backlog since it's the default)
+	if newStatus != "backlog" {
+		updatedWords = append(updatedWords, "="+newStatus)
+	}
 
 	// Add due date for in-progress and done status
 	if newStatus == "in-progress" || newStatus == "done" {
