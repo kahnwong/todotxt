@@ -5,7 +5,6 @@ go 1.25.4
 require (
 	github.com/1set/todotxt v0.0.4
 	github.com/gin-gonic/gin v1.11.0
-	github.com/joho/godotenv v1.5.1
 )
 
 require (

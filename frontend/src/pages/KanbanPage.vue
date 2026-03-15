@@ -198,12 +198,22 @@ const handleDrop = async (targetLane: Lane, targetStatus: string, event: DragEve
     return
   }
 
+  // Determine context: add @tinkering when moving from Today to a project lane
+  let context = todo.context || ''
+  if (sourceLane.id === 'today' && targetLane.id !== 'today') {
+    // Moving from Today to a project lane - add @tinkering if not already present
+    if (!context.includes('tinkering')) {
+      context = '@tinkering'
+    }
+  }
+
   try {
     // Update via API
     await axios.put('/api/todo/update', {
       id: todo.id,
       project: targetProject,
       status: targetStatus,
+      context: context,
     })
 
     // Refresh data

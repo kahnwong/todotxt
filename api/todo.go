@@ -122,7 +122,7 @@ func (ts *TodoService) tinkering() []Todo {
 	})
 }
 
-func (ts *TodoService) updateTodo(id int, newProject, newStatus string) error {
+func (ts *TodoService) updateTodo(id int, newProject, newStatus, newContext string) error {
 	// Read original file
 	todoPath := os.Getenv("TODO_PATH")
 	content, err := os.ReadFile(todoPath)
@@ -143,7 +143,7 @@ func (ts *TodoService) updateTodo(id int, newProject, newStatus string) error {
 		// Check if this is the todo we want to update
 		if currentID == id {
 			// Parse and update the line
-			updatedLine := ts.updateTodoLine(line, newProject, newStatus)
+			updatedLine := ts.updateTodoLine(line, newProject, newStatus, newContext)
 			updatedLines = append(updatedLines, updatedLine)
 		} else {
 			updatedLines = append(updatedLines, line)
@@ -161,15 +161,22 @@ func (ts *TodoService) updateTodo(id int, newProject, newStatus string) error {
 	return nil
 }
 
-func (ts *TodoService) updateTodoLine(line, newProject, newStatus string) string {
+func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext string) string {
 	words := strings.Fields(line)
 	var updatedWords []string
 
-	// Remove existing project, status, and due tags
+	// Remove existing project, status, context, and due tags
 	for _, word := range words {
-		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "due:") {
+		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "@") && !strings.HasPrefix(word, "due:") {
 			updatedWords = append(updatedWords, word)
 		}
+	}
+
+	// Add new context tag if provided
+	if newContext != "" {
+		// Remove the @ prefix if it exists in newContext
+		context := strings.TrimPrefix(newContext, "@")
+		updatedWords = append(updatedWords, "@"+context)
 	}
 
 	// Add new project tag if provided

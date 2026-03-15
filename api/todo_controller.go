@@ -10,6 +10,7 @@ type UpdateTodoRequest struct {
 	ID      int    `json:"id" binding:"required"`
 	Project string `json:"project"`
 	Status  string `json:"status" binding:"required"`
+	Context string `json:"context"`
 }
 
 var todoService = &TodoService{}
@@ -29,7 +30,7 @@ func UpdateTodoController(c *gin.Context) {
 		return
 	}
 
-	err := todoService.updateTodo(req.ID, req.Project, req.Status)
+	err := todoService.updateTodo(req.ID, req.Project, req.Status, req.Context)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
