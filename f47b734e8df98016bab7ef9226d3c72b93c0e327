@@ -1,0 +1,29 @@
+api/todo.go
+  763b2a15909014af 165-200
+api/todo_controller.go
+  763b2a15909014af 16-20,46-53,55-61
+frontend/src/pages/KanbanPage.vue
+  763b2a15909014af 42,64,86,96-121,260-281,283-284,286-287,289-290,292-293,295-309,311-316,548-608
+main.go
+  763b2a15909014af 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "f47b734e8df98016bab7ef9226d3c72b93c0e327",
+  "prompts": {
+    "763b2a15909014af": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30dfaa675ffe9FLdKZajy6FwrF",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 206,
+      "total_deletions": 0,
+      "accepted_lines": 198,
+      "overriden_lines": 2
+    }
+  }
+}
