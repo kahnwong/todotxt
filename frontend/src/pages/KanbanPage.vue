@@ -265,19 +265,26 @@ onUnmounted(() => {
 }
 
 .lane-label {
-  padding: 16px;
+  height: 50px;
+  padding: 0 16px;
   font-size: 14px;
   font-weight: 600;
   color: #24292f;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-right: 1px solid #e1e4e8;
+  display: flex;
+  align-items: center;
 }
 
 .column-header {
-  padding: 16px;
+  height: 50px;
+  padding: 0 16px;
   text-align: center;
   border-right: 1px solid #e1e4e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .column-header:last-child {
