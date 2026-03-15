@@ -23,11 +23,13 @@
         </div>
 
         <!-- Backlog Column -->
-        <div class="lane-column">
+        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'backlog', $event)">
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
             :key="todo.id"
             class="kanban-card"
+            draggable="true"
+            @dragstart="handleDragStart(todo, lane, $event)"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -40,11 +42,13 @@
         </div>
 
         <!-- In Progress Column -->
-        <div class="lane-column">
+        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'in-progress', $event)">
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
             :key="todo.id"
             class="kanban-card"
+            draggable="true"
+            @dragstart="handleDragStart(todo, lane, $event)"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -57,11 +61,13 @@
         </div>
 
         <!-- Done Column -->
-        <div class="lane-column">
+        <div class="lane-column" @dragover.prevent @drop="handleDrop(lane, 'done', $event)">
           <div
             v-for="todo in getTodosByStatus(lane.todos, 'done')"
             :key="todo.id"
             class="kanban-card"
+            draggable="true"
+            @dragstart="handleDragStart(todo, lane, $event)"
           >
             <div class="card-content">
               <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
@@ -118,6 +124,54 @@ const lanes = computed<Lane[]>(() => {
 
 const getTodosByStatus = (todos: Todo[], status: string): Todo[] => {
   return todos.filter((todo) => todo.status === status)
+}
+
+interface DragData {
+  todo: Todo
+  sourceLane: Lane
+}
+
+let dragData: DragData | null = null
+
+const handleDragStart = (todo: Todo, lane: Lane, event: DragEvent) => {
+  dragData = { todo, sourceLane: lane }
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+  }
+}
+
+const handleDrop = async (targetLane: Lane, targetStatus: string, event: DragEvent) => {
+  event.preventDefault()
+
+  if (!dragData) return
+
+  const { todo, sourceLane } = dragData
+
+  // Check if anything changed
+  const sourceProject = sourceLane.id === 'today' ? '' : sourceLane.title
+  const targetProject = targetLane.id === 'today' ? '' : targetLane.title
+
+  if (todo.status === targetStatus && sourceProject === targetProject) {
+    dragData = null
+    return
+  }
+
+  try {
+    // Update via API
+    await axios.put('/api/todo/update', {
+      id: todo.id,
+      project: targetProject,
+      status: targetStatus,
+    })
+
+    // Refresh data
+    await fetchTodoToday()
+    await fetchTodoTinkering()
+  } catch (error) {
+    console.error('Failed to update todo:', error)
+  }
+
+  dragData = null
 }
 
 const fetchTodoToday = async () => {
@@ -260,14 +314,27 @@ onUnmounted(() => {
   border-radius: 6px;
   padding: 12px;
   margin-bottom: 8px;
-  cursor: pointer;
+  cursor: grab;
   transition: all 0.15s ease;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
 }
 
 .kanban-card:hover {
   border-color: #8c959f;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
+}
+
+.kanban-card[draggable='true'] {
+  cursor: grab;
+}
+
+.kanban-card[draggable='true']:active {
+  cursor: grabbing;
+  opacity: 0.5;
 }
 
 .card-content {

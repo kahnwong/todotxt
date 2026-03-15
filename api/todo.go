@@ -120,3 +120,66 @@ func (ts *TodoService) tinkering() []Todo {
 		return tl.Filter(todo.FilterNotCompleted).Filter(todo.FilterByContext("tinkering"))
 	})
 }
+
+func (ts *TodoService) updateTodo(id int, newProject, newStatus string) error {
+	// Read original file
+	todoPath := os.Getenv("TODO_PATH")
+	content, err := os.ReadFile(todoPath)
+	if err != nil {
+		return fmt.Errorf("error reading todo file: %w", err)
+	}
+
+	lines := strings.Split(string(content), "\n")
+	var updatedLines []string
+	currentID := 1
+
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			updatedLines = append(updatedLines, line)
+			continue
+		}
+
+		// Check if this is the todo we want to update
+		if currentID == id {
+			// Parse and update the line
+			updatedLine := ts.updateTodoLine(line, newProject, newStatus)
+			updatedLines = append(updatedLines, updatedLine)
+		} else {
+			updatedLines = append(updatedLines, line)
+		}
+		currentID++
+	}
+
+	// Write back to file
+	newContent := strings.Join(updatedLines, "\n")
+	err = os.WriteFile(todoPath, []byte(newContent), 0644)
+	if err != nil {
+		return fmt.Errorf("error writing todo file: %w", err)
+	}
+
+	return nil
+}
+
+func (ts *TodoService) updateTodoLine(line, newProject, newStatus string) string {
+	words := strings.Fields(line)
+	var updatedWords []string
+
+	// Remove existing project and status tags
+	for _, word := range words {
+		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") {
+			updatedWords = append(updatedWords, word)
+		}
+	}
+
+	// Add new project tag if provided
+	if newProject != "" && newProject != "No Project" {
+		// Remove the + prefix if it exists in newProject
+		project := strings.TrimPrefix(newProject, "+")
+		updatedWords = append(updatedWords, "+"+project)
+	}
+
+	// Add new status tag
+	updatedWords = append(updatedWords, "="+newStatus)
+
+	return strings.Join(updatedWords, " ")
+}

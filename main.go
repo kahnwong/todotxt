@@ -24,6 +24,7 @@ func main() {
 	// API routes
 	router.GET("/api/todo/today", api.TodayController)
 	router.GET("/api/todo/tinkering", api.TinkeringController)
+	router.PUT("/api/todo/update", api.UpdateTodoController)
 
 	// Static routes
 	subFS, _ := fs.Sub(embedFS, "frontend/dist/spa")

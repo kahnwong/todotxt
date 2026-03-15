@@ -6,6 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type UpdateTodoRequest struct {
+	ID      int    `json:"id" binding:"required"`
+	Project string `json:"project"`
+	Status  string `json:"status" binding:"required"`
+}
+
 var todoService = &TodoService{}
 
 func TodayController(c *gin.Context) {
@@ -14,4 +20,20 @@ func TodayController(c *gin.Context) {
 
 func TinkeringController(c *gin.Context) {
 	c.JSON(http.StatusOK, todoService.tinkering())
+}
+
+func UpdateTodoController(c *gin.Context) {
+	var req UpdateTodoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := todoService.updateTodo(req.ID, req.Project, req.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Todo updated successfully"})
 }
