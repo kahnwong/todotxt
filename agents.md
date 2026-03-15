@@ -4,7 +4,10 @@ This document provides guidance for AI agents and developers using AI tools when
 
 ## Project Overview
 
-A web-based UI and API for managing and viewing todo.txt files. The application provides a modern interface to display filtered tasks from todo.txt format files with two main views: "Today" (tasks due today or overdue) and "Tinkering" (tasks with @tinkering context).
+A web-based UI and API for managing and viewing todo.txt files. The application provides two main interfaces:
+
+1. **List View** - Displays filtered tasks in two sections: "Today" (tasks due today or overdue) and "Tinkering" (tasks with @tinkering context)
+2. **Kanban Board** - Drag-and-drop board with swimlanes organized by project, featuring three status columns (Backlog, In Progress, Done) with inline editing capabilities
 
 ## Technology Stack
 
@@ -12,20 +15,23 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 - **Language**: Go 1.25.4
 - **Framework**: Gin web framework (v1.11.0)
 - **Key Libraries**:
-  - `github.com/1set/todotxt` - todo.txt parsing
-  - `godotenv` - environment configuration
+  - `github.com/1set/todotxt` (v0.0.4) - todo.txt parsing
+- **Environment**: direnv with .envrc (loads .env via dotenv)
 
 ### Frontend
 - **Framework**: Vue 3 (v3.4.18) with TypeScript
 - **UI Library**: Quasar Framework (v2.16.0) - Material Design components
 - **Build Tool**: Vite
+- **Package Manager**: Yarn
 - **HTTP Client**: Axios
 - **Routing**: Vue Router
+- **Icons**: @iconify/vue (v5.0.0)
 
 ### Infrastructure
 - Docker with multi-stage builds (golang:1.25-alpine → distroless)
 - GitHub Actions for CI/CD
 - Pre-commit hooks for code quality
+- SOPS for secret encryption (.sops.yaml with age key)
 
 ## Project Structure
 
@@ -38,7 +44,7 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 ├── frontend/              # Vue.js frontend application
 │   ├── src/
 │   │   ├── components/    # Vue components (TodoComponent.vue)
-│   │   ├── pages/         # Page components (IndexPage.vue)
+│   │   ├── pages/         # Page components (IndexPage.vue, KanbanPage.vue)
 │   │   ├── layouts/       # Layout components (MainLayout.vue)
 │   │   └── router/        # Vue Router configuration
 │   └── dist/spa/          # Built frontend (embedded in Go binary)
@@ -57,7 +63,8 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 - `api/utils.go` - URL sanitization to prevent parsing issues
 
 ### Frontend (Vue)
-- `frontend/src/pages/IndexPage.vue` - Main page with tab navigation
+- `frontend/src/pages/IndexPage.vue` - List view with tab navigation for Today and Tinkering sections
+- `frontend/src/pages/KanbanPage.vue` - Kanban board with drag-and-drop, swimlanes by project, inline editing
 - `frontend/src/components/TodoComponent.vue` - Reusable component for displaying todo lists
 - `frontend/src/router/routes.ts` - Route definitions
 - `frontend/src/layouts/MainLayout.vue` - Application layout wrapper
@@ -66,6 +73,8 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 
 - `GET /api/todo/today` - Returns tasks due today or overdue
 - `GET /api/todo/tinkering` - Returns tasks with @tinkering context
+- `PUT /api/todo/update` - Update task project, status, and context
+- `PUT /api/todo/update-text` - Update full task text
 
 Response format:
 ```json
@@ -74,10 +83,17 @@ Response format:
     "id": 1,
     "context": "@work",
     "project": "+project-name",
-    "todo": "Task description"
+    "todo": "Task description",
+    "created_date": "2026-03-15"
   }
 ]
 ```
+
+## Frontend Routes
+
+- `/` - IndexPage (list view with Today/Tinkering sections)
+- `/kanban` - KanbanPage (kanban board view)
+- `/*` - ErrorNotFound (404 page)
 
 ## Configuration
 
@@ -157,17 +173,36 @@ docker run -p 3000:3000 -v /path/to/todo.txt:/todo.txt -e TODO_PATH=/todo.txt to
 
 ## Important Implementation Details
 
-1. **Frontend Embedding**: The built Vue app is embedded in the Go binary using `//go:embed` directive
-2. **URL Sanitization**: URLs in todo.txt are sanitized (https:// stripped) to prevent parsing issues with the todotxt library
-3. **Auto-refresh**: Frontend polls API every 10 seconds for updates
-4. **Task Sorting**: Tasks are sorted by priority and project name
-5. **Distroless Container**: Production image uses distroless base for minimal attack surface
+1. **Custom Status System**: The application extends todo.txt format with custom status tags:
+   - `=backlog` - Default status (not written to file if default)
+   - `=in-progress` - Task currently being worked on
+   - `=done` - Completed task
+   - Status tags are parsed from todo text and stripped from display
+   - Due dates are automatically added when status changes to in-progress or done
+
+2. **Frontend Embedding**: The built Vue app is embedded in the Go binary using `//go:embed` directive
+
+3. **URL Sanitization**: URLs in todo.txt are sanitized (https:// stripped) to prevent parsing issues with the todotxt library
+
+4. **Auto-refresh**: Frontend polls API every 10 seconds for updates
+
+5. **Task Sorting**: Tasks are sorted by priority and project name
+
+6. **Distroless Container**: Production image uses distroless base for minimal attack surface
+
+7. **Kanban Board Logic**:
+   - "Today" swimlane excludes tasks with both @tinkering AND a project
+   - Project swimlanes created dynamically from @tinkering tasks
+   - Drag-and-drop automatically updates status, project, and context
+   - Moving from Today to project lane adds @tinkering context
 
 ## Testing Strategy
 
-- Go unit tests for backend logic
-- Pre-commit hooks ensure tests pass before commit
-- CI pipeline runs tests on all PRs
+- **API Testing**: Hurl for HTTP API testing (hurl/today.hurl)
+- **Backend**: Go unit tests for backend logic
+- **Frontend**: No unit tests (test script exits successfully)
+- **Pre-commit**: Hooks ensure tests pass before commit
+- **CI/CD**: Pipeline runs tests on all PRs
 
 ## Troubleshooting
 
