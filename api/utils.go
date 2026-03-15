@@ -7,7 +7,7 @@ import (
 
 func sanitizeTodo() (string, error) {
 	// Read and sanitize in-memory
-	todoBytes, err := os.ReadFile(os.Getenv("TODO_PATH"))
+	todoBytes, err := os.ReadFile(Config.TodoPath)
 	if err != nil {
 		return "", err
 	}

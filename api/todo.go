@@ -1,13 +1,22 @@
 package api
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
 
 	todo "github.com/1set/todotxt"
+	"github.com/sethvargo/go-envconfig"
 )
+
+var Config Env
+
+type Env struct {
+	TodoPath string `env:"TODO_PATH,required"`
+}
 
 type Todo struct {
 	ID          int    `json:"id"`
@@ -133,7 +142,7 @@ func (ts *TodoService) tinkering() []Todo {
 // updateTodoByID is a generic helper that updates a specific todo line by ID
 func (ts *TodoService) updateTodoByID(id int, updateFunc func(line string) string) error {
 	// Read original file
-	todoPath := os.Getenv("TODO_PATH")
+	todoPath := Config.TodoPath
 	content, err := os.ReadFile(todoPath)
 	if err != nil {
 		return fmt.Errorf("error reading todo file: %w", err)
@@ -235,4 +244,12 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 	}
 
 	return strings.Join(updatedWords, " ")
+}
+
+func init() {
+	ctx := context.Background()
+
+	if err := envconfig.Process(ctx, &Config); err != nil {
+		log.Fatal(err)
+	}
 }

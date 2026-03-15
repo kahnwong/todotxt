@@ -1,14 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kahnwong/todotxt/api"
-
-	"os"
+	"github.com/sethvargo/go-envconfig"
 )
+
+var Config Env
+
+type Env struct {
+	ListenAddr string `env:"LISTEN_ADDR,default=:3000"`
+	Mode       string `env:"MODE,default=development"`
+}
 
 func main() {
 	// init
@@ -27,7 +35,7 @@ func main() {
 		// If the path doesn't start with /api, try to serve static files
 		if !strings.HasPrefix(path, "/api") {
 			staticPath := "/frontend/dist/spa" // for docker
-			if os.Getenv("MODE") == "development" {
+			if Config.Mode == "development" {
 				staticPath = "frontend/dist/spa"
 			}
 			c.File(staticPath + path)
@@ -35,12 +43,16 @@ func main() {
 	})
 
 	// start server
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	if listenAddr == "" {
-		listenAddr = ":3000"
-	}
-	err := router.Run(listenAddr)
+	err := router.Run(Config.ListenAddr)
 	if err != nil {
 		fmt.Println("Error starting server", err)
+	}
+}
+
+func init() {
+	ctx := context.Background()
+
+	if err := envconfig.Process(ctx, &Config); err != nil {
+		log.Fatal(err)
 	}
 }
