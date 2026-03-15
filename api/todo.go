@@ -2,11 +2,10 @@ package api
 
 import (
 	"fmt"
+	"os"
 
 	todo "github.com/1set/todotxt"
 )
-
-var todotxtSanitizedPath = "/tmp/todo.txt"
 
 type Todo struct {
 	ID      int    `json:"id"`
@@ -47,10 +46,30 @@ type TodoService struct{}
 
 func (ts *TodoService) loadTasklist() (todo.TaskList, error) {
 	// Common setup - always executed
-	sanitizeTodo() // strip leading `https://` which results in the todo body returning null
-	tasklist, err := todo.LoadFromPath(todotxtSanitizedPath)
+	sanitizedContent, err := sanitizeTodo() // strip leading `https://` which results in the todo body returning null
 	if err != nil {
 		fmt.Printf("Error reading todo.txt: %s", err)
+		return nil, err
+	}
+
+	// Create in-memory pipe
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		fmt.Printf("Error creating pipe: %s", err)
+		return nil, err
+	}
+
+	// Write sanitized content to pipe in goroutine
+	go func() {
+		defer writer.Close()
+		writer.WriteString(sanitizedContent)
+	}()
+
+	// Load from pipe
+	tasklist, err := todo.LoadFromFile(reader)
+	reader.Close()
+	if err != nil {
+		fmt.Printf("Error parsing todo.txt: %s", err)
 		return nil, err
 	}
 	return tasklist, nil

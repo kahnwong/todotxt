@@ -1,24 +1,19 @@
 package api
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
 
-func sanitizeTodo() {
-	// sanitize
+func sanitizeTodo() (string, error) {
+	// Read and sanitize in-memory
 	todoBytes, err := os.ReadFile(os.Getenv("TODO_PATH"))
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	todoStr := string(todoBytes)
 	todoSanitized := strings.ReplaceAll(todoStr, "https://", "")
 
-	// write to file
-	err = os.WriteFile(todotxtSanitizedPath, []byte(todoSanitized), 0644)
-	if err != nil {
-		fmt.Println("Error writing to file")
-	}
+	return todoSanitized, nil
 }
