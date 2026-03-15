@@ -1,0 +1,40 @@
+api/todo.go
+  49e53516a20ff9bb 6,16,35-51,57-58
+frontend/src/components/models.ts
+  49e53516a20ff9bb 6
+frontend/src/pages/KanbanPage.vue
+  49e53516a20ff9bb 28,44-56,61-73,119-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "96dafd2869934c03f22181b5c479e672f378c52b",
+  "prompts": {
+    "49e53516a20ff9bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30e43acdbffejv0mmd7dBPAbTa",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 71,
+      "total_deletions": 18,
+      "accepted_lines": 380,
+      "overriden_lines": 0
+    },
+    "b3515dc2b8f71283": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30e50ec0cffeAoxiCdxZ0S6nVl",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 76,
+      "total_deletions": 44,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
