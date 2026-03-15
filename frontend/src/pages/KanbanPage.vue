@@ -42,9 +42,7 @@
             >
               <div class="card-content">
                 <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                  todo.project
-                }}</span>
+                <span class="card-project" v-if="todo.project">{{ todo.project }}</span>
                 <p class="card-text">{{ todo.todo }}</p>
               </div>
             </div>
@@ -67,9 +65,7 @@
             >
               <div class="card-content">
                 <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                  todo.project
-                }}</span>
+                <span class="card-project" v-if="todo.project">{{ todo.project }}</span>
                 <p class="card-text">{{ todo.todo }}</p>
               </div>
             </div>
@@ -92,9 +88,7 @@
             >
               <div class="card-content">
                 <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                  todo.project
-                }}</span>
+                <span class="card-project" v-if="todo.project">{{ todo.project }}</span>
                 <p class="card-text">{{ todo.todo }}</p>
               </div>
             </div>
