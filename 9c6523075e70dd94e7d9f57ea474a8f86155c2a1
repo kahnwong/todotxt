@@ -1,0 +1,41 @@
+api/todo.go
+  7d13c93ca952c7a6 228
+  0b836b23b1baa6e5 18,53-58,61-66,211,213,215-219,221,224,229-232,249-250
+frontend/src/components/models.ts
+  0b836b23b1baa6e5 7
+frontend/src/pages/KanbanPage.vue
+  0b836b23b1baa6e5 268,270,273,286-288
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "9c6523075e70dd94e7d9f57ea474a8f86155c2a1",
+  "prompts": {
+    "0b836b23b1baa6e5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30dd4a9e6ffeR6wAorXf8d45dI",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 53,
+      "total_deletions": 22,
+      "accepted_lines": 43,
+      "overriden_lines": 0
+    },
+    "7d13c93ca952c7a6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30dc76b0cffekcrOAv24ha6qzh",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 8,
+      "total_deletions": 8,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
