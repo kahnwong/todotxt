@@ -2,9 +2,16 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-toolbar-title> todo.txt </q-toolbar-title>
+        <q-toolbar-title>
+          <router-link to="/" style="text-decoration: none; color: inherit"> todo.txt </router-link>
+        </q-toolbar-title>
         <q-space />
-        <q-btn flat label="kanban" to="/kanban" />
+        <q-space />
+        <q-toolbar-title shrink class="text-subtitle1">
+          <router-link to="kanban/" style="text-decoration: none; color: inherit">
+            Kanban View
+          </router-link>
+        </q-toolbar-title>
       </q-toolbar>
     </q-header>
     <q-page-container>
