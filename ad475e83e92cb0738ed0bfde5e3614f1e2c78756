@@ -1,0 +1,23 @@
+frontend/src/pages/KanbanPage.vue
+  763b2a15909014af 124-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "ad475e83e92cb0738ed0bfde5e3614f1e2c78756",
+  "prompts": {
+    "763b2a15909014af": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30dfaa675ffe9FLdKZajy6FwrF",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 32,
+      "total_deletions": 2,
+      "accepted_lines": 32,
+      "overriden_lines": 0
+    }
+  }
+}
