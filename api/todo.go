@@ -10,11 +10,12 @@ import (
 )
 
 type Todo struct {
-	ID      int    `json:"id"`
-	Context string `json:"context"`
-	Project string `json:"project"`
-	Todo    string `json:"todo"`
-	Status  string `json:"status"`
+	ID          int    `json:"id"`
+	Context     string `json:"context"`
+	Project     string `json:"project"`
+	Todo        string `json:"todo"`
+	Status      string `json:"status"`
+	CreatedDate string `json:"created_date"`
 }
 
 func parseTodos(tasks todo.TaskList) []Todo {
@@ -49,13 +50,20 @@ func parseTodos(tasks todo.TaskList) []Todo {
 		// Rebuild todo text without status tag
 		todoText := strings.Join(cleanedWords, " ")
 
+		// Extract creation date
+		var createdDate string
+		if !t.CreatedDate.IsZero() {
+			createdDate = t.CreatedDate.Format("2006-01-02")
+		}
+
 		// append
 		todos = append(todos, Todo{
-			t.ID,
-			context,
-			project,
-			todoText,
-			status,
+			ID:          t.ID,
+			Context:     context,
+			Project:     project,
+			Todo:        todoText,
+			Status:      status,
+			CreatedDate: createdDate,
 		})
 	}
 
@@ -200,13 +208,28 @@ func (ts *TodoService) updateTodoContent(id int, newText string) error {
 
 func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext string) string {
 	words := strings.Fields(line)
+	var contentWords []string
 	var updatedWords []string
+	var addDate string
 
-	// Remove existing project, status, context, and due tags
+	// Check if first word is a date (YYYY-MM-DD format)
+	if len(words) > 0 && len(words[0]) == 10 && words[0][4] == '-' && words[0][7] == '-' {
+		addDate = words[0]
+		words = words[1:] // Remove date from words to process
+	}
+
+	// Extract content (non-tag words)
 	for _, word := range words {
 		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "@") && !strings.HasPrefix(word, "due:") {
-			updatedWords = append(updatedWords, word)
+			contentWords = append(contentWords, word)
 		}
+	}
+
+	// Build in order: addDate @context +project content =status due:date
+
+	// Add creation date if it exists
+	if addDate != "" {
+		updatedWords = append(updatedWords, addDate)
 	}
 
 	// Add new context tag if provided
@@ -222,6 +245,9 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 		project := strings.TrimPrefix(newProject, "+")
 		updatedWords = append(updatedWords, "+"+project)
 	}
+
+	// Add content
+	updatedWords = append(updatedWords, contentWords...)
 
 	// Add new status tag (skip =backlog since it's the default)
 	if newStatus != "backlog" {

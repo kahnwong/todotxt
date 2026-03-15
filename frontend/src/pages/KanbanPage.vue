@@ -265,11 +265,12 @@ const highlightedText = ref('')
 
 const openEditDialog = (todo: Todo) => {
   editingTodo.value = todo
-  // Reconstruct full todo text with tags in order: @context +project content =status
+  // Reconstruct full todo text with tags in order: created_date +project content @context =status
   const parts = []
-  if (todo.context) parts.push(todo.context)
+  if (todo.created_date) parts.push(todo.created_date)
   if (todo.project) parts.push(todo.project)
   parts.push(todo.todo)
+  if (todo.context) parts.push(todo.context)
   // Don't append =backlog since it's the default state
   if (todo.status && todo.status !== 'backlog') parts.push(`=${todo.status}`)
   editedText.value = parts.join(' ')
@@ -281,6 +282,9 @@ const updateHighlight = () => {
   let text = editedText.value
   // Escape HTML
   text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+  // Highlight creation date (YYYY-MM-DD at start, not prefixed with due:)
+  text = text.replace(/^(\d{4}-\d{2}-\d{2})\b/g, '<span class="highlight-date">$1</span>')
 
   // Highlight @context tags
   text = text.replace(/(@\w+)/g, '<span class="highlight-context">$1</span>')

@@ -4,4 +4,5 @@ export interface Todo {
   project: string
   todo: string
   status: string
+  created_date: string
 }
