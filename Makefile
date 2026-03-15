@@ -5,3 +5,6 @@ start-backend:
 
 build-frontend:
 	cd frontend && yarn install && yarn build
+
+test:
+	hurl hurl/today.hurl
