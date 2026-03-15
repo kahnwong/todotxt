@@ -1,0 +1,25 @@
+api/todo.go
+  49e53516a20ff9bb 5,49,54-72
+api/utils.go
+  49e53516a20ff9bb 8-9,12,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "67005485b559202a194de2f3eef12f1c3e00e82b",
+  "prompts": {
+    "49e53516a20ff9bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30e43acdbffejv0mmd7dBPAbTa",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 30,
+      "total_deletions": 16,
+      "accepted_lines": 27,
+      "overriden_lines": 0
+    }
+  }
+}
