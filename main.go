@@ -31,7 +31,11 @@ func main() {
 	})
 
 	// start server
-	err := router.Run(os.Getenv("LISTEN_ADDR"))
+	listenAddr := os.Getenv("LISTEN_ADDR")
+	if listenAddr == "" {
+		listenAddr = ":3000"
+	}
+	err := router.Run(listenAddr)
 	if err != nil {
 		fmt.Println("Error starting server", err)
 	}
