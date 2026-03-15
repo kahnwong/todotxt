@@ -137,7 +137,7 @@ const lanes = computed<Lane[]>(() => {
   projectGroups.forEach((todos, project) => {
     laneList.push({
       id: `project-${project}`,
-      title: project,
+      title: project.startsWith('+') ? project.slice(1) : project,
       todos,
     })
   })
