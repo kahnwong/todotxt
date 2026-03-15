@@ -1,0 +1,23 @@
+agents.md
+  9c148161e9458aa5 1-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "c683b210bf635be9810f2dc4fefbdaa4b7245299",
+  "prompts": {
+    "9c148161e9458aa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30e5b520dffeFT4xpUiCOMOBG9",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 194,
+      "total_deletions": 0,
+      "accepted_lines": 194,
+      "overriden_lines": 0
+    }
+  }
+}
