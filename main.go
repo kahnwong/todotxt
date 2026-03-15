@@ -26,7 +26,11 @@ func main() {
 
 		// If the path doesn't start with /api, try to serve static files
 		if !strings.HasPrefix(path, "/api") {
-			c.File("/frontend/dist/spa" + path) // [TODO] dev mode use `frontend/dist/spa`
+			staticPath := "/frontend/dist/spa" // for docker
+			if os.Getenv("MODE") == "development" {
+				staticPath = "frontend/dist/spa"
+			}
+			c.File(staticPath + path)
 		}
 	})
 
