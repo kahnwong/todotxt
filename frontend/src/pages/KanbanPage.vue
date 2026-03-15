@@ -310,7 +310,7 @@ const saveTodo = async () => {
     // Clean up multiple spaces
     textToSave = textToSave.replace(/\s+/g, ' ')
 
-    await axios.put('/api/todo/update-text', {
+    await axios.put('/api/todo/update-content', {
       id: editingTodo.value.id,
       text: textToSave,
     })

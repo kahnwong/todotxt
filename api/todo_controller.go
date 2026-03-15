@@ -44,7 +44,7 @@ func UpdateTodoController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Todo updated successfully"})
 }
 
-func UpdateTodoTextController(c *gin.Context) {
+func UpdateTodoContentController(c *gin.Context) {
 	var req UpdateTodoTextRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
