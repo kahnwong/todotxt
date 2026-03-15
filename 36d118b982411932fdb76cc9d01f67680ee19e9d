@@ -1,0 +1,60 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "36d118b982411932fdb76cc9d01f67680ee19e9d",
+  "prompts": {
+    "6b0c5e157f105f0b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30d9146f1ffefjV34imAD8Nmy7",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 16,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "7b9f48229369dd29": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30d940594ffemzDVVCKoliTfSW",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "9c83c69af3ec14df": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30d835914ffeUvpxncentALeMQ",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 184,
+      "total_deletions": 82,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "fd449dc053330ac6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30d7910b2ffe71AwDzI4WZ4OKc",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 72,
+      "accepted_lines": 2,
+      "overriden_lines": 1
+    }
+  }
+}
