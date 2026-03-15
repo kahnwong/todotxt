@@ -3,7 +3,6 @@
     <div class="kanban-board">
       <!-- Column Headers -->
       <div class="board-header">
-        <div class="lane-label">Lane</div>
         <div class="column-header">
           <Icon icon="mdi:inbox-multiple" class="column-icon column-icon-backlog" />
           <h3 class="column-title">Backlog</h3>
@@ -25,77 +24,79 @@
           <span class="lane-count">{{ lane.todos.length }}</span>
         </div>
 
-        <!-- Backlog Column -->
-        <div
-          class="lane-column"
-          :class="{ 'drop-target': isDropTarget(lane.id, 'backlog') }"
-          @dragover="handleDragOver(lane.id, 'backlog', $event)"
-          @drop="handleDrop(lane, 'backlog', $event)"
-        >
+        <div class="lane-columns">
+          <!-- Backlog Column -->
           <div
-            v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
-            :key="todo.id"
-            class="kanban-card"
-            draggable="true"
-            @dragstart="handleDragStart(todo, lane, $event)"
-            @dragend="handleDragEnd"
+            class="lane-column"
+            :class="{ 'drop-target': isDropTarget(lane.id, 'backlog') }"
+            @dragover="handleDragOver(lane.id, 'backlog', $event)"
+            @drop="handleDrop(lane, 'backlog', $event)"
           >
-            <div class="card-content">
-              <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-              <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                todo.project
-              }}</span>
-              <p class="card-text">{{ todo.todo }}</p>
+            <div
+              v-for="todo in getTodosByStatus(lane.todos, 'backlog')"
+              :key="todo.id"
+              class="kanban-card"
+              draggable="true"
+              @dragstart="handleDragStart(todo, lane, $event)"
+              @dragend="handleDragEnd"
+            >
+              <div class="card-content">
+                <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
+                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
+                  todo.project
+                }}</span>
+                <p class="card-text">{{ todo.todo }}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- In Progress Column -->
-        <div
-          class="lane-column"
-          :class="{ 'drop-target': isDropTarget(lane.id, 'in-progress') }"
-          @dragover="handleDragOver(lane.id, 'in-progress', $event)"
-          @drop="handleDrop(lane, 'in-progress', $event)"
-        >
+          <!-- In Progress Column -->
           <div
-            v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
-            :key="todo.id"
-            class="kanban-card"
-            draggable="true"
-            @dragstart="handleDragStart(todo, lane, $event)"
-            @dragend="handleDragEnd"
+            class="lane-column"
+            :class="{ 'drop-target': isDropTarget(lane.id, 'in-progress') }"
+            @dragover="handleDragOver(lane.id, 'in-progress', $event)"
+            @drop="handleDrop(lane, 'in-progress', $event)"
           >
-            <div class="card-content">
-              <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-              <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                todo.project
-              }}</span>
-              <p class="card-text">{{ todo.todo }}</p>
+            <div
+              v-for="todo in getTodosByStatus(lane.todos, 'in-progress')"
+              :key="todo.id"
+              class="kanban-card"
+              draggable="true"
+              @dragstart="handleDragStart(todo, lane, $event)"
+              @dragend="handleDragEnd"
+            >
+              <div class="card-content">
+                <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
+                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
+                  todo.project
+                }}</span>
+                <p class="card-text">{{ todo.todo }}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Done Column -->
-        <div
-          class="lane-column"
-          :class="{ 'drop-target': isDropTarget(lane.id, 'done') }"
-          @dragover="handleDragOver(lane.id, 'done', $event)"
-          @drop="handleDrop(lane, 'done', $event)"
-        >
+          <!-- Done Column -->
           <div
-            v-for="todo in getTodosByStatus(lane.todos, 'done')"
-            :key="todo.id"
-            class="kanban-card"
-            draggable="true"
-            @dragstart="handleDragStart(todo, lane, $event)"
-            @dragend="handleDragEnd"
+            class="lane-column"
+            :class="{ 'drop-target': isDropTarget(lane.id, 'done') }"
+            @dragover="handleDragOver(lane.id, 'done', $event)"
+            @drop="handleDrop(lane, 'done', $event)"
           >
-            <div class="card-content">
-              <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
-              <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
-                todo.project
-              }}</span>
-              <p class="card-text">{{ todo.todo }}</p>
+            <div
+              v-for="todo in getTodosByStatus(lane.todos, 'done')"
+              :key="todo.id"
+              class="kanban-card"
+              draggable="true"
+              @dragstart="handleDragStart(todo, lane, $event)"
+              @dragend="handleDragEnd"
+            >
+              <div class="card-content">
+                <span class="card-context" v-if="todo.context">{{ todo.context }}</span>
+                <span class="card-project" v-if="todo.project && lane.id !== 'today'">{{
+                  todo.project
+                }}</span>
+                <p class="card-text">{{ todo.todo }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -260,25 +261,12 @@ onUnmounted(() => {
 
 .board-header {
   display: grid;
-  grid-template-columns: 200px repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   border-bottom: 2px solid #e1e4e8;
   background: #f6f8fa;
   position: sticky;
   top: 0;
   z-index: 10;
-}
-
-.lane-label {
-  height: 50px;
-  padding: 0 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #24292f;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-right: 1px solid #e1e4e8;
-  display: flex;
-  align-items: center;
 }
 
 .column-header {
@@ -323,10 +311,9 @@ onUnmounted(() => {
 }
 
 .kanban-lane {
-  display: grid;
-  grid-template-columns: 200px repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   border-bottom: 1px solid #e1e4e8;
-  min-height: 120px;
 }
 
 .kanban-lane:last-child {
@@ -334,13 +321,18 @@ onUnmounted(() => {
 }
 
 .lane-title {
-  padding: 16px;
-  border-right: 1px solid #e1e4e8;
-  background: #fafbfc;
+  padding: 12px 16px;
+  background: #e5e8e8;
+  border-bottom: 1px solid #e1e4e8;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+
+.lane-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-height: 120px;
 }
 
 .lane-name {
