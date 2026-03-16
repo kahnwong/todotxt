@@ -1,0 +1,27 @@
+AGENTS.md
+  eb31cc54cc6996de 10,179,182
+frontend/src/pages/KanbanPage.vue
+  eb31cc54cc6996de 154,190-193,228
+frontend/src/constants/kanban.ts
+  eb31cc54cc6996de 4,47-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "8cebe5710387d676f8fd5820fc573dced98592f0",
+  "prompts": {
+    "eb31cc54cc6996de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_30a1d8acfffebJ5YFOPg523KMp",
+        "model": "custom/claude-sonnet-4-5"
+      },
+      "human_author": "Karn Wong <karn@karnwong.me>",
+      "messages": [],
+      "total_additions": 20,
+      "total_deletions": 8,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    }
+  }
+}
