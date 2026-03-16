@@ -1,8 +1,10 @@
 # todotxt
 
-Web UI and API for todo.txt
+Web UI and API for todo.txt. Also has kanban view to triage tasks.
 
 ## Usage
+
+ghcr docker image is available.
 
 ```bash
 make build-frontend
@@ -15,3 +17,9 @@ docker run \
   -e LISTEN_ADDR=:3000 \
   todotxt
 ```
+
+## Screenshots
+
+![list](docs/list.webp)
+
+![kanban](docs/kanban.webp)
