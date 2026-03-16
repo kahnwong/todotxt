@@ -1,6 +1,7 @@
 export const TODO_STATUS = {
   BACKLOG: 'backlog',
   IN_PROGRESS: 'in-progress',
+  STUCK: 'stuck',
   DONE: 'done',
 } as const
 
@@ -41,6 +42,12 @@ export const COLUMN_CONFIG = [
     title: 'In Progress',
     icon: 'mdi:progress-clock',
     iconClass: 'column-icon-progress',
+  },
+  {
+    id: TODO_STATUS.STUCK,
+    title: 'Stuck',
+    icon: 'mdi:alert-circle',
+    iconClass: 'column-icon-stuck',
   },
   {
     id: TODO_STATUS.DONE,

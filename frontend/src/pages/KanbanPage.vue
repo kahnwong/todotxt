@@ -151,7 +151,7 @@ onUnmounted(() => {
 
 .board-header {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   border-bottom: 2px solid #e1e4e8;
   background: #f6f8fa;
   position: sticky;
@@ -185,6 +185,10 @@ onUnmounted(() => {
 
 .column-icon-progress {
   color: #f59e0b;
+}
+
+.column-icon-stuck {
+  color: #ef4444;
 }
 
 .column-icon-done {
@@ -221,7 +225,7 @@ onUnmounted(() => {
 
 .lane-columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   min-height: 120px;
 }
 

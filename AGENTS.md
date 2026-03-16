@@ -7,7 +7,7 @@ This document provides guidance for AI agents and developers using AI tools when
 A web-based UI and API for managing and viewing todo.txt files. The application provides two main interfaces:
 
 1. **List View** - Displays filtered tasks in two sections: "Today" (tasks due today or overdue) and "Tinkering" (tasks with @tinkering context)
-2. **Kanban Board** - Drag-and-drop board with swimlanes organized by project, featuring three status columns (Backlog, In Progress, Done) with inline editing capabilities
+2. **Kanban Board** - Drag-and-drop board with swimlanes organized by project, featuring four status columns (Backlog, In Progress, Stuck, Done) with inline editing capabilities
 
 ## Technology Stack
 
@@ -176,9 +176,10 @@ docker run -p 3000:3000 -v /path/to/todo.txt:/todo.txt -e TODO_PATH=/todo.txt to
 1. **Custom Status System**: The application extends todo.txt format with custom status tags:
    - `=backlog` - Default status (not written to file if default)
    - `=in-progress` - Task currently being worked on
+   - `=stuck` - Task is blocked or needs attention
    - `=done` - Completed task
    - Status tags are parsed from todo text and stripped from display
-   - Due dates are automatically added when status changes to in-progress or done
+   - Due dates are automatically added when status changes to in-progress or done (but NOT for stuck)
 
 2. **Frontend Embedding**: The built Vue app is embedded in the Go binary using `//go:embed` directive
 
