@@ -36,6 +36,10 @@
               @click="openEditDialog(todo)"
             >
               <div class="card-content">
+                <div v-if="lane.id === 'today' && (todo.context || todo.project)" class="card-tags">
+                  <span v-if="todo.context" class="card-context">{{ todo.context }}</span>
+                  <span v-if="todo.project" class="card-project">{{ todo.project }}</span>
+                </div>
                 <p class="card-text">{{ todo.todo }}</p>
               </div>
             </div>
@@ -298,6 +302,13 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
 }
 
 .card-context {
