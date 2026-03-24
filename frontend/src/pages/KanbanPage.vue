@@ -12,7 +12,7 @@
       <!-- Lanes (Rows) -->
       <div v-for="lane in lanes" :key="lane.id" class="kanban-lane">
         <div class="lane-title">
-          <span class="lane-name">{{ lane.title }}</span>
+          <span class="lane-name" :class="{ 'lane-name-work': lane.id.startsWith('work-project-') }">{{ lane.title }}</span>
           <span class="lane-count">{{ lane.todos.length }}</span>
         </div>
 
@@ -88,6 +88,7 @@ import { useTodoEdit } from '../composables/useTodoEdit'
 
 const todoToday = ref<Todo[]>([])
 const todoTinkering = ref<Todo[]>([])
+const todoWork = ref<Todo[]>([])
 
 // Fetch functions
 const fetchTodoToday = async () => {
@@ -100,16 +101,22 @@ const fetchTodoTinkering = async () => {
   todoTinkering.value = response.data as Todo[]
 }
 
+const fetchTodoWork = async () => {
+  const response = await axios.get('/api/todo/work')
+  todoWork.value = response.data as Todo[]
+}
+
 // Use composables
-const { lanes, getTodosByStatus } = useLanes(todoToday, todoTinkering)
+const { lanes, getTodosByStatus } = useLanes(todoToday, todoTinkering, todoWork)
 
 const { handleDragStart, handleDragOver, handleDragEnd, handleDrop, isDropTarget } = useDragDrop(
   fetchTodoToday,
   fetchTodoTinkering,
+  fetchTodoWork,
 )
 
 const { showEditDialog, editedText, highlightedText, openEditDialog, updateHighlight, saveTodo } =
-  useTodoEdit(fetchTodoToday, fetchTodoTinkering)
+  useTodoEdit(fetchTodoToday, fetchTodoTinkering, fetchTodoWork)
 
 // Auto-refresh setup
 let updateInterval: number | null = null
@@ -117,10 +124,12 @@ let updateInterval: number | null = null
 onMounted(() => {
   fetchTodoToday()
   fetchTodoTinkering()
+  fetchTodoWork()
 
   updateInterval = setInterval(() => {
     fetchTodoToday()
     fetchTodoTinkering()
+    fetchTodoWork()
   }, UPDATE_INTERVAL_MS) as unknown as number
 })
 
@@ -237,6 +246,10 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 600;
   color: #24292f;
+}
+
+.lane-name-work {
+  color: #14b8a6;
 }
 
 .lane-count {

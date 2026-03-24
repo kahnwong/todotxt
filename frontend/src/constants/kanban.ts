@@ -11,6 +11,7 @@ export const LANE_IDS = {
 
 export const CONTEXT = {
   TINKERING: '@tinkering',
+  WORK: '@work',
 } as const
 
 export const UPDATE_INTERVAL_MS = 10000

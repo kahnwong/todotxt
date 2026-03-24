@@ -139,6 +139,12 @@ func (ts *TodoService) tinkering() []Todo {
 	})
 }
 
+func (ts *TodoService) work() []Todo {
+	return ts.filterTodos(func(tl todo.TaskList) todo.TaskList {
+		return tl.Filter(todo.FilterNotCompleted).Filter(todo.FilterByContext("work"))
+	})
+}
+
 // updateTodoByID is a generic helper that updates a specific todo line by ID
 func (ts *TodoService) updateTodoByID(id int, updateFunc func(line string) string) error {
 	// Read original file

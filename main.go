@@ -25,6 +25,7 @@ func main() {
 	// API routes
 	router.GET("/api/todo/today", api.TodayController)
 	router.GET("/api/todo/tinkering", api.TinkeringController)
+	router.GET("/api/todo/work", api.WorkController)
 	router.PUT("/api/todo/update", api.UpdateTodoController)
 	router.PUT("/api/todo/update-content", api.UpdateTodoContentController)
 

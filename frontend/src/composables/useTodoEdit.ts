@@ -14,6 +14,7 @@ import axios from 'axios'
 export function useTodoEdit(
   fetchTodoToday: () => Promise<void>,
   fetchTodoTinkering: () => Promise<void>,
+  fetchTodoWork: () => Promise<void>,
 ) {
   const showEditDialog = ref(false)
   const editingTodo = ref<Todo | null>(null)
@@ -46,6 +47,7 @@ export function useTodoEdit(
       // Refresh data
       await fetchTodoToday()
       await fetchTodoTinkering()
+      await fetchTodoWork()
 
       showEditDialog.value = false
     } catch (error) {

@@ -28,6 +28,10 @@ func TinkeringController(c *gin.Context) {
 	c.JSON(http.StatusOK, todoService.tinkering())
 }
 
+func WorkController(c *gin.Context) {
+	c.JSON(http.StatusOK, todoService.work())
+}
+
 func UpdateTodoController(c *gin.Context) {
 	var req UpdateTodoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

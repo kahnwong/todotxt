@@ -8,6 +8,7 @@ import axios from 'axios'
  */
 export function useDragDrop(
   fetchTodoToday: () => Promise<void>,
+  fetchTodoWork: () => Promise<void>,
   fetchTodoTinkering: () => Promise<void>,
 ) {
   let dragData: DragData | null = null
@@ -46,11 +47,15 @@ export function useDragDrop(
       return
     }
 
-    // Determine context: add @tinkering when moving from Today to a project lane
+    // Determine context: add @tinkering or @work when moving from Today to a project lane
     let context = todo.context || ''
     if (sourceLane.id === LANE_IDS.TODAY && targetLane.id !== LANE_IDS.TODAY) {
-      // Moving from Today to a project lane - add @tinkering if not already present
-      if (!context.includes('tinkering')) {
+      // Moving from Today to a project lane
+      if (targetLane.id.startsWith('work-project-')) {
+        // Moving to work project lane - add @work
+        context = CONTEXT.WORK
+      } else if (targetLane.id.startsWith('project-')) {
+        // Moving to tinkering project lane - add @tinkering
         context = CONTEXT.TINKERING
       }
     }
@@ -66,6 +71,7 @@ export function useDragDrop(
 
       // Refresh data
       await fetchTodoToday()
+      await fetchTodoWork()
       await fetchTodoTinkering()
     } catch (error) {
       console.error('Failed to update todo:', error)
