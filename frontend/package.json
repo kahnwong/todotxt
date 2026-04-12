@@ -17,7 +17,7 @@
   "dependencies": {
     "@iconify/vue": "^5.0.0",
     "@quasar/extras": "^1.16.4",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
     "vue-router": "^5.0.0"
