@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md" style="max-width: 400px">
     <q-list bordered separator>
-      <q-item v-ripple v-for="todo in todos" :key="todo.id">
+      <q-item no-ripple v-for="todo in todos" :key="todo.id">
         <q-item-section>
           <div>
             <span class="todo-context">{{ todo.context }}&nbsp;</span>
