@@ -38,10 +38,8 @@ export default defineConfig((/* ctx */) => {
           'firefox115',
           'chrome115',
           'safari14',
-          // legacy devices
-          'chrome74',
         ],
-        node: 'node22',
+        node: 'node24',
       },
 
       typescript: {
