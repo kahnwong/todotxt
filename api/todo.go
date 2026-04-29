@@ -200,6 +200,10 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 	var contentWords []string
 	var updatedWords []string
 	var addDate string
+	isCompleted := len(words) > 0 && words[0] == "x"
+	if isCompleted {
+		words = words[1:]
+	}
 
 	// Check if first word is a date (YYYY-MM-DD format)
 	if len(words) > 0 && len(words[0]) == 10 && words[0][4] == '-' && words[0][7] == '-' {
@@ -214,7 +218,10 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 		}
 	}
 
-	// Build in order: addDate @context +project content =status due:date
+	// Build in order: x addDate @context +project content =status due:date
+	if newStatus == "done" {
+		updatedWords = append(updatedWords, "x")
+	}
 
 	// Add creation date if it exists
 	if addDate != "" {
