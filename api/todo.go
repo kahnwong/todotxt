@@ -200,6 +200,7 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 	var contentWords []string
 	var updatedWords []string
 	var addDate string
+	var dueDate string
 	isCompleted := len(words) > 0 && words[0] == "x"
 	if isCompleted {
 		words = words[1:]
@@ -213,7 +214,12 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 
 	// Extract content (non-tag words)
 	for _, word := range words {
-		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "@") && !strings.HasPrefix(word, "due:") {
+		if strings.HasPrefix(word, "due:") {
+			dueDate = word
+			continue
+		}
+
+		if !strings.HasPrefix(word, "+") && !strings.HasPrefix(word, "=") && !strings.HasPrefix(word, "@") {
 			contentWords = append(contentWords, word)
 		}
 	}
@@ -250,10 +256,19 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 		updatedWords = append(updatedWords, "="+newStatus)
 	}
 
+	// Preserve existing due dates so todos stay visible in today lanes after status changes.
+	if dueDate != "" {
+		updatedWords = append(updatedWords, dueDate)
+	}
+
 	// Add due date for in-progress and done status
 	if newStatus == "in-progress" || newStatus == "done" {
 		today := time.Now().Format("2006-01-02")
-		updatedWords = append(updatedWords, "due:"+today)
+		if dueDate != "" {
+			updatedWords[len(updatedWords)-1] = "due:" + today
+		} else {
+			updatedWords = append(updatedWords, "due:"+today)
+		}
 	}
 
 	return strings.Join(updatedWords, " ")
