@@ -5,7 +5,11 @@ import { LANE_IDS, CONTEXT } from '../constants/kanban'
 /**
  * Composable for managing kanban lanes
  */
-export function useLanes(todoToday: Ref<Todo[]>, todoTinkering: Ref<Todo[]>, todoWork: Ref<Todo[]>) {
+export function useLanes(
+  todoToday: Ref<Todo[]>,
+  todoTinkering: Ref<Todo[]>,
+  todoWork: Ref<Todo[]>,
+) {
   const lanes = computed<Lane[]>(() => {
     // Filter today todos to exclude @tinkering and @work tasks with projects
     const filteredTodayTodos = todoToday.value.filter((todo) => {

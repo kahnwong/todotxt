@@ -45,12 +45,9 @@ schema-version = "1.10.0"
 ## ... sourced by _your shell_ when you run 'flox activate'.
 ## -------------------------------------------------------------------
 [profile]
-# common = '''
-#   gum style \
-#   --foreground 212 --border-foreground 212 --border double \
-#   --align center --width 50 --margin "1 2" --padding "2 4" \
-#     $INTRO_MESSAGE
-# '''
+common = '''
+    open http://localhost:9000
+'''
 ## Shell-specific customizations such as setting aliases go here:
 # bash = ...
 # zsh  = ...

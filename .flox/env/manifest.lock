@@ -3,7 +3,9 @@
   "manifest": {
     "schema-version": "1.10.0",
     "hook": {},
-    "profile": {},
+    "profile": {
+      "common": "    open http://localhost:9000\n"
+    },
     "options": {},
     "services": {
       "backend": {
