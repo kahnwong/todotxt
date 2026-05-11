@@ -279,13 +279,14 @@ func init() {
 	ctx := context.Background()
 
 	if err := envconfig.Process(ctx, &Config); err != nil {
-		log.Fatal().Err(err).Msg("Error reading config")
-	}
-	if Config.TodoPath == "" {
-		if isTestEnvironment() {
-			log.Warn().Msg("TODO_PATH key is missing, but continuing due to test environment")
+		if Config.TodoPath == "" {
+			if isTestEnvironment() {
+				log.Warn().Msg("TODO_PATH key is missing, but continuing due to test environment")
+			} else {
+				log.Fatal().Msg("TODO_PATH key is required")
+			}
 		} else {
-			log.Fatal().Msg("TODO_PATH key is required")
+			log.Fatal().Err(err).Msg("Failed to process environment variables")
 		}
 	}
 }
