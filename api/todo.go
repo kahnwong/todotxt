@@ -4,12 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"time"
 
 	todo "github.com/1set/todotxt"
-	"github.com/rs/zerolog/log"
+	_ "github.com/kahnwong/todotxt/internal/logging"
 	"github.com/sethvargo/go-envconfig"
 )
 
@@ -86,14 +87,14 @@ func (ts *TodoService) loadTasklist() (todo.TaskList, error) {
 	// Common setup - always executed
 	sanitizedContent, err := sanitizeTodo() // strip leading `https://` which results in the todo body returning null
 	if err != nil {
-		fmt.Printf("Error reading todo.txt: %s", err)
+		slog.Error("Error reading todo.txt", "error", err)
 		return nil, err
 	}
 
 	// Create in-memory pipe
 	reader, writer, err := os.Pipe()
 	if err != nil {
-		fmt.Printf("Error creating pipe: %s", err)
+		slog.Error("Error creating pipe", "error", err)
 		return nil, err
 	}
 
@@ -107,7 +108,7 @@ func (ts *TodoService) loadTasklist() (todo.TaskList, error) {
 	tasklist, err := todo.LoadFromFile(reader)
 	reader.Close()
 	if err != nil {
-		fmt.Printf("Error parsing todo.txt: %s", err)
+		slog.Error("Error parsing todo.txt", "error", err)
 		return nil, err
 	}
 	return tasklist, nil
@@ -281,12 +282,14 @@ func init() {
 	if err := envconfig.Process(ctx, &Config); err != nil {
 		if Config.TodoPath == "" {
 			if isTestEnvironment() {
-				log.Warn().Msg("TODO_PATH key is missing, but continuing due to test environment")
+				slog.Warn("TODO_PATH key is missing, but continuing due to test environment")
 			} else {
-				log.Fatal().Msg("TODO_PATH key is required")
+				slog.Error("TODO_PATH key is required")
+				os.Exit(1)
 			}
 		} else {
-			log.Fatal().Err(err).Msg("Failed to process environment variables")
+			slog.Error("Failed to process environment variables", "error", err)
+			os.Exit(1)
 		}
 	}
 }

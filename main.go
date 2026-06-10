@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kahnwong/todotxt/api"
+	_ "github.com/kahnwong/todotxt/internal/logging"
 	"github.com/sethvargo/go-envconfig"
 )
 
@@ -46,7 +47,7 @@ func main() {
 	// start server
 	err := router.Run(Config.ListenAddr)
 	if err != nil {
-		fmt.Println("Error starting server", err)
+		slog.Error("Error starting server", "error", err)
 	}
 }
 
@@ -54,6 +55,7 @@ func init() {
 	ctx := context.Background()
 
 	if err := envconfig.Process(ctx, &Config); err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to process environment variables", "error", err)
+		os.Exit(1)
 	}
 }
