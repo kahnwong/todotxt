@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
-    "@quasar/extras": "^1.16.4",
+    "@quasar/extras": "^2.0.0",
     "axios": "^1.15.0",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
