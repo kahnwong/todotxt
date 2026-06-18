@@ -3,7 +3,35 @@ package api
 import (
 	"strings"
 	"testing"
+
+	todo "github.com/1set/todotxt"
 )
+
+func TestParseTodosIncludesPriority(t *testing.T) {
+	task, err := todo.ParseTask("(A) 2026-04-29 finish report @work +ops due:2026-04-29")
+	if err != nil {
+		t.Fatalf("failed to parse task: %v", err)
+	}
+
+	parsed := parseTodos(todo.TaskList{*task})
+	if len(parsed) != 1 {
+		t.Fatalf("expected 1 todo, got %d", len(parsed))
+	}
+
+	if parsed[0].Priority != "A" {
+		t.Fatalf("expected priority A, got %q", parsed[0].Priority)
+	}
+}
+
+func TestUpdateTodoLinePreservesPriority(t *testing.T) {
+	ts := &TodoService{}
+
+	updated := ts.updateTodoLine("(A) 2026-04-29 finish report due:2026-04-29", "", "stuck", "")
+
+	if !strings.HasPrefix(updated, "(A) 2026-04-29") {
+		t.Fatalf("expected priority to be preserved near the start, got %q", updated)
+	}
+}
 
 func TestUpdateTodoLinePreservesDueDateForStuck(t *testing.T) {
 	ts := &TodoService{}

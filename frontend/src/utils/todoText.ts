@@ -1,5 +1,18 @@
 import { FILE_EXTENSIONS } from '../constants/kanban'
 
+function getPriorityClass(priority: string): string {
+  switch (priority.toUpperCase()) {
+    case 'A':
+      return 'priority-a'
+    case 'B':
+      return 'priority-b'
+    case 'C':
+      return 'priority-c'
+    default:
+      return 'priority-other'
+  }
+}
+
 /**
  * Detects URLs in text and prepends https:// if missing
  */
@@ -40,6 +53,12 @@ export function highlightTodoSyntax(text: string): string {
   // Escape HTML
   let highlighted = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
+  // Highlight priority at the start, e.g. (A)
+  highlighted = highlighted.replace(/^(\(([A-Z])\))(?=\s|$)/g, (_match, token, priority) => {
+    const priorityClass = getPriorityClass(priority)
+    return `<span class="highlight-priority ${priorityClass}">${token}</span>`
+  })
+
   // Highlight creation date (YYYY-MM-DD at start, not prefixed with due:)
   highlighted = highlighted.replace(
     /^(\d{4}-\d{2}-\d{2})\b/g,
@@ -71,10 +90,12 @@ export function reconstructTodoText(todo: {
   created_date?: string
   project?: string
   todo: string
+  priority?: string
   context?: string
   status?: string
 }): string {
   const parts = []
+  if (todo.priority) parts.push(todo.priority.startsWith('(') ? todo.priority : `(${todo.priority})`)
   if (todo.created_date) parts.push(todo.created_date)
   if (todo.project) parts.push(todo.project)
   parts.push(todo.todo)

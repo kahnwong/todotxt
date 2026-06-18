@@ -25,6 +25,7 @@ type Todo struct {
 	Context     string `json:"context"`
 	Project     string `json:"project"`
 	Todo        string `json:"todo"`
+	Priority    string `json:"priority"`
 	Status      string `json:"status"`
 	CreatedDate string `json:"created_date"`
 }
@@ -73,6 +74,7 @@ func parseTodos(tasks todo.TaskList) []Todo {
 			Context:     context,
 			Project:     project,
 			Todo:        todoText,
+			Priority:    t.Priority,
 			Status:      status,
 			CreatedDate: createdDate,
 		})
@@ -203,8 +205,15 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 	var updatedWords []string
 	var addDate string
 	var dueDate string
+	var priority string
 	isCompleted := len(words) > 0 && words[0] == "x"
 	if isCompleted {
+		words = words[1:]
+	}
+
+	// Check if first word is a priority, e.g. (A)
+	if len(words) > 0 && len(words[0]) == 3 && strings.HasPrefix(words[0], "(") && strings.HasSuffix(words[0], ")") {
+		priority = words[0]
 		words = words[1:]
 	}
 
@@ -226,9 +235,14 @@ func (ts *TodoService) updateTodoLine(line, newProject, newStatus, newContext st
 		}
 	}
 
-	// Build in order: x addDate @context +project content =status due:date
+	// Build in order: x priority addDate @context +project content =status due:date
 	if newStatus == "done" {
 		updatedWords = append(updatedWords, "x")
+	}
+
+	// Add priority if it exists
+	if priority != "" {
+		updatedWords = append(updatedWords, priority)
 	}
 
 	// Add creation date if it exists

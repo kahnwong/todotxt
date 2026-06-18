@@ -3,6 +3,7 @@ export interface Todo {
   context: string
   project: string
   todo: string
+  priority: string
   status: string
   created_date: string
 }

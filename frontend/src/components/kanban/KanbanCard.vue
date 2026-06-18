@@ -7,9 +7,10 @@
     @click="emit('edit')"
   >
     <div class="card-content">
-      <div v-if="showTags" class="card-tags">
-        <span v-if="todo.context" class="card-context">{{ todo.context }}</span>
-        <span v-if="todo.project" class="card-project">{{ todo.project }}</span>
+      <div v-if="showBadges" class="card-tags">
+        <span v-if="todo.priority" :class="['card-priority', priorityClass]">({{ todo.priority }})</span>
+        <span v-if="showTags && todo.context" class="card-context">{{ todo.context }}</span>
+        <span v-if="showTags && todo.project" class="card-project">{{ todo.project }}</span>
       </div>
       <p class="card-text">{{ todo.todo }}</p>
     </div>
@@ -33,6 +34,23 @@ const emit = defineEmits<{
 
 const showTags = computed(() => {
   return props.laneId === 'today' && (props.todo.context || props.todo.project)
+})
+
+const showBadges = computed(() => {
+  return Boolean(props.todo.priority || showTags.value)
+})
+
+const priorityClass = computed(() => {
+  switch (props.todo.priority.toUpperCase()) {
+    case 'A':
+      return 'priority-a'
+    case 'B':
+      return 'priority-b'
+    case 'C':
+      return 'priority-c'
+    default:
+      return 'priority-other'
+  }
 })
 </script>
 
@@ -77,6 +95,35 @@ const showTags = computed(() => {
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 4px;
+}
+
+.card-priority {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.priority-a {
+  color: #cf222e;
+  background: #ffebe9;
+}
+
+.priority-b {
+  color: #ff8c00;
+  background: #fff1e5;
+}
+
+.priority-c {
+  color: #9a6700;
+  background: #fff8c5;
+}
+
+.priority-other {
+  color: #825d3a;
+  background: #f3e9dc;
 }
 
 .card-context {

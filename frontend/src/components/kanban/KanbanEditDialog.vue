@@ -84,6 +84,26 @@ const handleInput = (event: Event) => {
   border-color: #0969da;
 }
 
+:deep(.highlight-priority) {
+  font-weight: 600;
+}
+
+:deep(.priority-a) {
+  color: #cf222e;
+}
+
+:deep(.priority-b) {
+  color: #ff8c00;
+}
+
+:deep(.priority-c) {
+  color: #9a6700;
+}
+
+:deep(.priority-other) {
+  color: #825d3a;
+}
+
 :deep(.highlight-context) {
   color: #4fa1ac;
   font-weight: 600;
