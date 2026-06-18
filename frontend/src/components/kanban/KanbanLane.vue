@@ -31,28 +31,28 @@
 </template>
 
 <script setup lang="ts">
-import KanbanCard from './KanbanCard.vue'
-import type { Lane, Todo } from 'components/models'
+import KanbanCard from "./KanbanCard.vue";
+import type { Lane, Todo } from "components/models";
 
 defineProps<{
-  lane: Lane
+  lane: Lane;
   columns: ReadonlyArray<{
-    id: string
-    title: string
-    icon: string
-    iconClass: string
-  }>
-  getTodosByStatus: (todos: Todo[], status: string) => Todo[]
-  isDropTarget: (laneId: string, status: string) => boolean
-}>()
+    id: string;
+    title: string;
+    icon: string;
+    iconClass: string;
+  }>;
+  getTodosByStatus: (todos: Todo[], status: string) => Todo[];
+  isDropTarget: (laneId: string, status: string) => boolean;
+}>();
 
 const emit = defineEmits<{
-  dragstart: [todo: Todo, lane: Lane, event: DragEvent]
-  dragover: [laneId: string, status: string, event: DragEvent]
-  dragend: []
-  drop: [lane: Lane, status: string, event: DragEvent]
-  edit: [todo: Todo]
-}>()
+  dragstart: [todo: Todo, lane: Lane, event: DragEvent];
+  dragover: [laneId: string, status: string, event: DragEvent];
+  dragend: [];
+  drop: [lane: Lane, status: string, event: DragEvent];
+  edit: [todo: Todo];
+}>();
 </script>
 
 <style scoped>

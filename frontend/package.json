@@ -1,11 +1,10 @@
 {
   "name": "todotxt",
   "version": "0.0.1",
+  "private": true,
   "description": "A frontend to display todo.txt content for today filter",
-  "productName": "todo.txt",
   "author": "Karn Wong <karn@karnwong.me>",
   "type": "module",
-  "private": true,
   "scripts": {
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
@@ -41,5 +40,6 @@
     "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
-  }
+  },
+  "productName": "todo.txt"
 }

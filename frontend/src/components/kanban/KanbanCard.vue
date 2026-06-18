@@ -8,7 +8,9 @@
   >
     <div class="card-content">
       <div v-if="showBadges" class="card-tags">
-        <span v-if="todo.priority" :class="['card-priority', priorityClass]">({{ todo.priority }})</span>
+        <span v-if="todo.priority" :class="['card-priority', priorityClass]"
+          >({{ todo.priority }})</span
+        >
         <span v-if="showTags && todo.context" class="card-context">{{ todo.context }}</span>
         <span v-if="showTags && todo.project" class="card-project">{{ todo.project }}</span>
       </div>
@@ -18,40 +20,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Todo } from 'components/models'
+import { computed } from "vue";
+import type { Todo } from "components/models";
 
 const props = defineProps<{
-  todo: Todo
-  laneId: string
-}>()
+  todo: Todo;
+  laneId: string;
+}>();
 
 const emit = defineEmits<{
-  dragstart: [event: DragEvent]
-  dragend: []
-  edit: []
-}>()
+  dragstart: [event: DragEvent];
+  dragend: [];
+  edit: [];
+}>();
 
 const showTags = computed(() => {
-  return props.laneId === 'today' && (props.todo.context || props.todo.project)
-})
+  return props.laneId === "today" && (props.todo.context || props.todo.project);
+});
 
 const showBadges = computed(() => {
-  return Boolean(props.todo.priority || showTags.value)
-})
+  return Boolean(props.todo.priority || showTags.value);
+});
 
 const priorityClass = computed(() => {
   switch (props.todo.priority.toUpperCase()) {
-    case 'A':
-      return 'priority-a'
-    case 'B':
-      return 'priority-b'
-    case 'C':
-      return 'priority-c'
+    case "A":
+      return "priority-a";
+    case "B":
+      return "priority-b";
+    case "C":
+      return "priority-c";
     default:
-      return 'priority-other'
+      return "priority-other";
   }
-})
+});
 </script>
 
 <style scoped>
@@ -75,11 +77,11 @@ const priorityClass = computed(() => {
   transform: translateY(-1px);
 }
 
-.kanban-card[draggable='true'] {
+.kanban-card[draggable="true"] {
   cursor: grab;
 }
 
-.kanban-card[draggable='true']:active {
+.kanban-card[draggable="true"]:active {
   cursor: grabbing;
   opacity: 0.5;
 }

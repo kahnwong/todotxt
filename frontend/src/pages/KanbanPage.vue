@@ -29,74 +29,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { Todo } from 'components/models'
-import axios from 'axios'
-import KanbanBoardHeader from 'components/kanban/KanbanBoardHeader.vue'
-import KanbanEditDialog from 'components/kanban/KanbanEditDialog.vue'
-import KanbanLane from 'components/kanban/KanbanLane.vue'
-import { COLUMN_CONFIG, UPDATE_INTERVAL_MS } from '../constants/kanban'
-import { useLanes } from '../composables/useLanes'
-import { useDragDrop } from '../composables/useDragDrop'
-import { useTodoEdit } from '../composables/useTodoEdit'
+import { ref, onMounted, onUnmounted } from "vue";
+import type { Todo } from "components/models";
+import axios from "axios";
+import KanbanBoardHeader from "components/kanban/KanbanBoardHeader.vue";
+import KanbanEditDialog from "components/kanban/KanbanEditDialog.vue";
+import KanbanLane from "components/kanban/KanbanLane.vue";
+import { COLUMN_CONFIG, UPDATE_INTERVAL_MS } from "../constants/kanban";
+import { useLanes } from "../composables/useLanes";
+import { useDragDrop } from "../composables/useDragDrop";
+import { useTodoEdit } from "../composables/useTodoEdit";
 
-const todoToday = ref<Todo[]>([])
-const todoTinkering = ref<Todo[]>([])
-const todoWork = ref<Todo[]>([])
+const todoToday = ref<Todo[]>([]);
+const todoTinkering = ref<Todo[]>([]);
+const todoWork = ref<Todo[]>([]);
 
 // Fetch functions
 const fetchTodoToday = async () => {
-  const response = await axios.get('/api/todo/today')
-  todoToday.value = response.data as Todo[]
-}
+  const response = await axios.get("/api/todo/today");
+  todoToday.value = response.data as Todo[];
+};
 
 const fetchTodoTinkering = async () => {
-  const response = await axios.get('/api/todo/tinkering')
-  todoTinkering.value = response.data as Todo[]
-}
+  const response = await axios.get("/api/todo/tinkering");
+  todoTinkering.value = response.data as Todo[];
+};
 
 const fetchTodoWork = async () => {
-  const response = await axios.get('/api/todo/work')
-  todoWork.value = response.data as Todo[]
-}
+  const response = await axios.get("/api/todo/work");
+  todoWork.value = response.data as Todo[];
+};
 
 // Use composables
-const { lanes, getTodosByStatus } = useLanes(todoToday, todoTinkering, todoWork)
+const { lanes, getTodosByStatus } = useLanes(todoToday, todoTinkering, todoWork);
 
 const { handleDragStart, handleDragOver, handleDragEnd, handleDrop, isDropTarget } = useDragDrop(
   fetchTodoToday,
   fetchTodoWork,
   fetchTodoTinkering,
-)
+);
 
 const { showEditDialog, editedText, highlightedText, openEditDialog, updateHighlight, saveTodo } =
-  useTodoEdit(fetchTodoToday, fetchTodoTinkering, fetchTodoWork)
+  useTodoEdit(fetchTodoToday, fetchTodoTinkering, fetchTodoWork);
 
 const handleEditedTextUpdate = (value: string) => {
-  editedText.value = value
-  updateHighlight()
-}
+  editedText.value = value;
+  updateHighlight();
+};
 
 // Auto-refresh setup
-let updateInterval: number | null = null
+let updateInterval: number | null = null;
 
 onMounted(() => {
-  fetchTodoToday()
-  fetchTodoTinkering()
-  fetchTodoWork()
+  fetchTodoToday();
+  fetchTodoTinkering();
+  fetchTodoWork();
 
   updateInterval = setInterval(() => {
-    fetchTodoToday()
-    fetchTodoTinkering()
-    fetchTodoWork()
-  }, UPDATE_INTERVAL_MS) as unknown as number
-})
+    fetchTodoToday();
+    fetchTodoTinkering();
+    fetchTodoWork();
+  }, UPDATE_INTERVAL_MS) as unknown as number;
+});
 
 onUnmounted(() => {
   if (updateInterval) {
-    clearInterval(updateInterval)
+    clearInterval(updateInterval);
   }
-})
+});
 </script>
 
 <style scoped>

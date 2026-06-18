@@ -13,44 +13,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { Todo } from 'components/models'
-import TodoComponent from 'components/TodoComponent.vue'
-import axios from 'axios'
+import { ref, onMounted, onUnmounted } from "vue";
+import type { Todo } from "components/models";
+import TodoComponent from "components/TodoComponent.vue";
+import axios from "axios";
 
-const todoToday = ref<Todo[]>([])
-const todoTinkering = ref<Todo[]>([])
+const todoToday = ref<Todo[]>([]);
+const todoTinkering = ref<Todo[]>([]);
 
 const fetchTodoToday = async () => {
-  const response = await axios.get('/api/todo/today')
-  todoToday.value = response.data as Todo[]
-}
+  const response = await axios.get("/api/todo/today");
+  todoToday.value = response.data as Todo[];
+};
 
 const fetchTodoTinkering = async () => {
-  const response = await axios.get('/api/todo/tinkering')
-  todoTinkering.value = response.data as Todo[]
-}
+  const response = await axios.get("/api/todo/tinkering");
+  todoTinkering.value = response.data as Todo[];
+};
 //
 // onMounted(() => {
 //   fetchTodoToday()
 //   fetchTodoTinkering()
 // })
 
-let updateInterval: number | null = null
-const UPDATE_INTERVAL_MS = 10000
+let updateInterval: number | null = null;
+const UPDATE_INTERVAL_MS = 10000;
 onMounted(() => {
-  fetchTodoToday()
-  fetchTodoTinkering()
+  fetchTodoToday();
+  fetchTodoTinkering();
 
   updateInterval = setInterval(() => {
-    fetchTodoToday()
+    fetchTodoToday();
     // fetchTodoTinkering() // updating both results in a gui glitch, prob race condition
-  }, UPDATE_INTERVAL_MS) as unknown as number
-})
+  }, UPDATE_INTERVAL_MS) as unknown as number;
+});
 
 onUnmounted(() => {
   if (updateInterval) {
-    clearInterval(updateInterval)
+    clearInterval(updateInterval);
   }
-})
+});
 </script>

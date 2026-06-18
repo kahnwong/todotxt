@@ -12,6 +12,7 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 ## Technology Stack
 
 ### Backend
+
 - **Language**: Go 1.25.4
 - **Framework**: Gin web framework (v1.11.0)
 - **Key Libraries**:
@@ -19,6 +20,7 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 - **Environment**: direnv with .envrc (loads .env via dotenv)
 
 ### Frontend
+
 - **Framework**: Vue 3 (v3.4.18) with TypeScript
 - **UI Library**: Quasar Framework (v2.16.0) - Material Design components
 - **Build Tool**: Vite
@@ -28,6 +30,7 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 - **Icons**: @iconify/vue (v5.0.0)
 
 ### Infrastructure
+
 - Docker with multi-stage builds (golang:1.25-alpine → distroless)
 - GitHub Actions for CI/CD
 - Pre-commit hooks for code quality
@@ -57,12 +60,14 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 ## Key Files and Their Purposes
 
 ### Backend (Go)
+
 - `main.go` - Application entry point, sets up Gin router and embeds frontend
 - `api/todo.go` - Core business logic for parsing and filtering todo.txt files
 - `api/todo_controller.go` - HTTP controllers for `/api/todo/today` and `/api/todo/tinkering`
 - `api/utils.go` - URL sanitization to prevent parsing issues
 
 ### Frontend (Vue)
+
 - `frontend/src/pages/IndexPage.vue` - List view with tab navigation for Today and Tinkering sections
 - `frontend/src/pages/KanbanPage.vue` - Kanban board with drag-and-drop, swimlanes by project, inline editing
 - `frontend/src/components/TodoComponent.vue` - Reusable component for displaying todo lists
@@ -77,6 +82,7 @@ A web-based UI and API for managing and viewing todo.txt files. The application 
 - `PUT /api/todo/update-text` - Update full task text
 
 Response format:
+
 ```json
 [
   {
@@ -98,29 +104,34 @@ Response format:
 ## Configuration
 
 Environment variables (`.env` file):
+
 - `LISTEN_ADDR` - Server listen address (default: `:3000`)
 - `TODO_PATH` - Path to todo.txt file (required)
 
 ## Development Workflow
 
 ### Starting Development Servers
+
 ```bash
 make start-frontend  # Start Vue dev server (port 9000)
 make start-backend   # Run Go backend (port 3000)
 ```
 
 ### Building
+
 ```bash
 make build-frontend  # Build Vue app for production
 make build          # Build Go binary with embedded frontend
 ```
 
 ### Testing
+
 ```bash
 make test           # Run Go tests
 ```
 
 ### Code Quality
+
 - Pre-commit hooks automatically run:
   - `go fmt` - Code formatting
   - `golangci-lint` - Linting
@@ -129,6 +140,7 @@ make test           # Run Go tests
 ## Common Tasks
 
 ### Adding a New Todo Filter View
+
 1. Add filter function in `api/todo.go` (follow pattern of `GetTodayTodos` or `GetTinkeringTodos`)
 2. Add controller endpoint in `api/todo_controller.go`
 3. Register route in `main.go`
@@ -136,22 +148,26 @@ make test           # Run Go tests
 5. Add new tab in the Quasar tabs component
 
 ### Modifying Todo Display
+
 - Edit `frontend/src/components/TodoComponent.vue`
 - Context tags are styled with blue color
 - Project tags are styled with gold color
 
 ### Changing URL Sanitization
+
 - Modify `api/utils.go` - currently strips `https://` prefix to prevent parsing issues
 
 ## Code Conventions
 
 ### Go
+
 - Follow standard Go formatting (enforced by `go fmt`)
 - Use descriptive variable names
 - Keep functions focused and single-purpose
 - Error handling: return errors, don't panic
 
 ### Vue/TypeScript
+
 - Use Composition API with `<script setup lang="ts">`
 - TypeScript for type safety
 - Quasar components for UI consistency
@@ -160,12 +176,14 @@ make test           # Run Go tests
 ## Deployment
 
 ### Docker
+
 ```bash
 docker build -t todotxt .
 docker run -p 3000:3000 -v /path/to/todo.txt:/todo.txt -e TODO_PATH=/todo.txt todotxt
 ```
 
 ### CI/CD
+
 - GitHub Actions automatically:
   - Run tests on PRs
   - Build and push Docker images on master branch
@@ -208,15 +226,18 @@ docker run -p 3000:3000 -v /path/to/todo.txt:/todo.txt -e TODO_PATH=/todo.txt to
 ## Troubleshooting
 
 ### Frontend not loading
+
 - Ensure `make build-frontend` was run before building Go binary
 - Check that `frontend/dist/spa` directory exists
 
 ### Todo.txt not parsing correctly
+
 - Check URL sanitization in `api/utils.go`
 - Verify todo.txt format follows standard conventions
 - Check `TODO_PATH` environment variable is set correctly
 
 ### Port conflicts
+
 - Frontend dev server uses port 9000
 - Backend uses port 3000 (configurable via `LISTEN_ADDR`)
 

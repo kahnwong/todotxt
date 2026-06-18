@@ -18,26 +18,26 @@
 </template>
 
 <script setup lang="ts">
-import type { Todo } from 'components/models'
+import type { Todo } from "components/models";
 
 export interface TodoProps {
-  todos: Todo[]
+  todos: Todo[];
 }
 
-withDefaults(defineProps<TodoProps>(), {})
+withDefaults(defineProps<TodoProps>(), {});
 
 const priorityClass = (priority: string) => {
   switch (priority.toUpperCase()) {
-    case 'A':
-      return 'priority-a'
-    case 'B':
-      return 'priority-b'
-    case 'C':
-      return 'priority-c'
+    case "A":
+      return "priority-a";
+    case "B":
+      return "priority-b";
+    case "C":
+      return "priority-c";
     default:
-      return 'priority-other'
+      return "priority-other";
   }
-}
+};
 </script>
 
 <style>

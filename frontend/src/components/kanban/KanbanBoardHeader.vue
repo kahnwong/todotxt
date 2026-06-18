@@ -8,16 +8,16 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import { Icon } from "@iconify/vue";
 
 defineProps<{
   columns: ReadonlyArray<{
-    id: string
-    title: string
-    icon: string
-    iconClass: string
-  }>
-}>()
+    id: string;
+    title: string;
+    icon: string;
+    iconClass: string;
+  }>;
+}>();
 </script>
 
 <style scoped>

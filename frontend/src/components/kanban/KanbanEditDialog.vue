@@ -27,27 +27,27 @@
 
 <script setup lang="ts">
 defineProps<{
-  modelValue: boolean
-  editedText: string
-  highlightedText: string
-}>()
+  modelValue: boolean;
+  editedText: string;
+  highlightedText: string;
+}>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  updateText: [value: string]
-  save: []
-}>()
+  "update:modelValue": [value: boolean];
+  updateText: [value: string];
+  save: [];
+}>();
 
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement
-  emit('updateText', target.value)
-}
+  const target = event.target as HTMLTextAreaElement;
+  emit("updateText", target.value);
+};
 </script>
 
 <style scoped>
 .editor-container {
   position: relative;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -69,7 +69,7 @@ const handleInput = (event: Event) => {
   position: relative;
   width: 100%;
   padding: 8px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 14px;
   line-height: 1.5;
   background: transparent;
