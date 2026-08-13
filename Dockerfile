@@ -8,7 +8,7 @@ COPY . ./
 
 RUN CGO_ENABLED=0 go build -ldflags "-w -s" -o /todotxt
 
-FROM gcr.io/distroless/static-debian13:debug AS deploy
+FROM gcr.io/distroless/static-debian13:latest AS deploy
 
 WORKDIR /
 
