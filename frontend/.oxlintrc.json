@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error"
+  },
+  "plugins": ["typescript", "vue"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "ga": "readonly",
+    "cordova": "readonly",
+    "Capacitor": "readonly",
+    "chrome": "readonly",
+    "browser": "readonly"
+  },
+  "rules": {
+    "prefer-promise-reject-errors": "off",
+    "typescript/consistent-type-imports": ["error", { "prefer": "type-imports" }]
+  },
+  "overrides": [
+    {
+      "files": ["src-pwa/custom-service-worker.ts"],
+      "env": {
+        "serviceworker": true
+      }
+    }
+  ]
+}
