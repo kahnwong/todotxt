@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import KanbanCard from "./KanbanCard.vue";
-import type { Lane, Todo } from "components/models";
+import type { Lane, Todo } from "@/components/models";
 
 defineProps<{
   lane: Lane;

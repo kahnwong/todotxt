@@ -30,11 +30,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import type { Todo } from "components/models";
+import type { Todo } from "@/components/models";
 import axios from "axios";
-import KanbanBoardHeader from "components/kanban/KanbanBoardHeader.vue";
-import KanbanEditDialog from "components/kanban/KanbanEditDialog.vue";
-import KanbanLane from "components/kanban/KanbanLane.vue";
+import KanbanBoardHeader from "@/components/kanban/KanbanBoardHeader.vue";
+import KanbanEditDialog from "@/components/kanban/KanbanEditDialog.vue";
+import KanbanLane from "@/components/kanban/KanbanLane.vue";
 import { COLUMN_CONFIG, UPDATE_INTERVAL_MS } from "../constants/kanban";
 import { useLanes } from "../composables/useLanes";
 import { useDragDrop } from "../composables/useDragDrop";

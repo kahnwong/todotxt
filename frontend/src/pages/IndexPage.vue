@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import type { Todo } from "components/models";
-import TodoComponent from "components/TodoComponent.vue";
+import type { Todo } from "@/components/models";
+import TodoComponent from "@/components/TodoComponent.vue";
 import axios from "axios";
 
 const todoToday = ref<Todo[]>([]);

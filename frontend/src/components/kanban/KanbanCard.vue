@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Todo } from "components/models";
+import type { Todo } from "@/components/models";
 
 const props = defineProps<{
   todo: Todo;

@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Todo } from "components/models";
+import type { Todo } from "@/components/models";
 
 export interface TodoProps {
   todos: Todo[];
