@@ -2,13 +2,19 @@ package main
 
 import (
 	"context"
+	"embed"
+	"io/fs"
 	"log/slog"
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/recover"
+	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/kahnwong/todotxt/api"
 	_ "github.com/kahnwong/todotxt/internal/logging"
+	slogfiber "github.com/samber/slog-fiber"
 	"github.com/sethvargo/go-envconfig"
 )
 
@@ -16,37 +22,66 @@ var Config Env
 
 type Env struct {
 	ListenAddr string `env:"LISTEN_ADDR,default=:3000"`
-	Mode       string `env:"MODE,default=development"`
+}
+
+//go:embed all:frontend/dist
+var frontendAssets embed.FS
+
+type structValidator struct {
+	validate *validator.Validate
+}
+
+func (v *structValidator) Validate(out any) error {
+	return v.validate.Struct(out)
+}
+
+func newApp(spaFS fs.FS) (*fiber.App, error) {
+	index, err := fs.ReadFile(spaFS, "index.html")
+	if err != nil {
+		return nil, err
+	}
+
+	app := fiber.New(fiber.Config{
+		StructValidator: &structValidator{validate: validator.New()},
+	})
+	app.Use(slogfiber.New(slog.Default()))
+	app.Use(recover.New())
+
+	// API routes
+	app.Get("/api/todo/today", api.TodayController)
+	app.Get("/api/todo/tinkering", api.TinkeringController)
+	app.Get("/api/todo/work", api.WorkController)
+	app.Put("/api/todo/update", api.UpdateTodoController)
+	app.Put("/api/todo/update-content", api.UpdateTodoContentController)
+
+	app.Get("/*", static.New("", static.Config{
+		FS: spaFS,
+		Next: func(c fiber.Ctx) bool {
+			return strings.HasPrefix(c.Path(), "/api")
+		},
+		NotFoundHandler: func(c fiber.Ctx) error {
+			c.Type("html")
+			return c.Status(fiber.StatusOK).Send(index)
+		},
+	}))
+
+	return app, nil
 }
 
 func main() {
-	// init
-	router := gin.Default()
-
-	// API routes
-	router.GET("/api/todo/today", api.TodayController)
-	router.GET("/api/todo/tinkering", api.TinkeringController)
-	router.GET("/api/todo/work", api.WorkController)
-	router.PUT("/api/todo/update", api.UpdateTodoController)
-	router.PUT("/api/todo/update-content", api.UpdateTodoContentController)
-
-	// Static routes
-	router.NoRoute(func(c *gin.Context) {
-		path := c.Request.URL.Path
-
-		// If the path doesn't start with /api, try to serve static files
-		if !strings.HasPrefix(path, "/api") {
-			staticPath := "/frontend/dist/spa" // for docker
-			if Config.Mode == "development" {
-				staticPath = "frontend/dist/spa"
-			}
-			c.File(staticPath + path)
-		}
-	})
-
-	// start server
-	err := router.Run(Config.ListenAddr)
+	spaFS, err := fs.Sub(frontendAssets, "frontend/dist/spa")
 	if err != nil {
+		slog.Error("Failed to load frontend assets", "error", err)
+		return
+	}
+
+	app, err := newApp(spaFS)
+	if err != nil {
+		slog.Error("Failed to initialize server", "error", err)
+		return
+	}
+
+	if err := app.Listen(Config.ListenAddr); err != nil {
 		slog.Error("Error starting server", "error", err)
 	}
 }

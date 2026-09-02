@@ -8,7 +8,7 @@ import (
 	slogzerolog "github.com/samber/slog-zerolog/v2"
 )
 
-const defaultLevel = zerolog.InfoLevel
+const defaultLevel = zerolog.DebugLevel
 
 func init() {
 	Configure()
@@ -16,15 +16,24 @@ func init() {
 
 func Configure() {
 	level := defaultLevel
+	var parseErr error
 	if envLevel := os.Getenv("LOG_LEVEL"); envLevel != "" {
 		parsedLevel, err := zerolog.ParseLevel(envLevel)
 		if err == nil {
 			level = parsedLevel
+		} else {
+			parseErr = err
 		}
 	}
 
 	zerolog.SetGlobalLevel(level)
 	output := zerolog.ConsoleWriter{Out: os.Stderr}
 	logger := zerolog.New(output).Level(level).With().Timestamp().Logger()
-	slog.SetDefault(slog.New(slogzerolog.Option{Logger: &logger}.NewZerologHandler()))
+	slog.SetDefault(slog.New(slogzerolog.Option{
+		Level:  slogzerolog.ZeroLogLeveler{Logger: &logger},
+		Logger: &logger,
+	}.NewZerologHandler()))
+	if parseErr != nil {
+		slog.Warn("Invalid LOG_LEVEL; using debug", "value", os.Getenv("LOG_LEVEL"), "error", parseErr)
+	}
 }

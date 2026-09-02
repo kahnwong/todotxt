@@ -1,65 +1,59 @@
 package api
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
 )
 
 type UpdateTodoRequest struct {
-	ID      int    `json:"id" binding:"required"`
+	ID      int    `json:"id" validate:"required"`
 	Project string `json:"project"`
-	Status  string `json:"status" binding:"required"`
+	Status  string `json:"status" validate:"required"`
 	Context string `json:"context"`
 }
 
 type UpdateTodoTextRequest struct {
-	ID   int    `json:"id" binding:"required"`
-	Text string `json:"text" binding:"required"`
+	ID   int    `json:"id" validate:"required"`
+	Text string `json:"text" validate:"required"`
 }
 
 var todoService = &TodoService{}
 
-func TodayController(c *gin.Context) {
-	c.JSON(http.StatusOK, todoService.today())
+func TodayController(c fiber.Ctx) error {
+	return c.JSON(todoService.today())
 }
 
-func TinkeringController(c *gin.Context) {
-	c.JSON(http.StatusOK, todoService.tinkering())
+func TinkeringController(c fiber.Ctx) error {
+	return c.JSON(todoService.tinkering())
 }
 
-func WorkController(c *gin.Context) {
-	c.JSON(http.StatusOK, todoService.work())
+func WorkController(c fiber.Ctx) error {
+	return c.JSON(todoService.work())
 }
 
-func UpdateTodoController(c *gin.Context) {
+func UpdateTodoController(c fiber.Ctx) error {
 	var req UpdateTodoRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.Bind().JSON(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	err := todoService.updateTodo(req.ID, req.Project, req.Status, req.Context)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Todo updated successfully"})
+	return c.JSON(fiber.Map{"message": "Todo updated successfully"})
 }
 
-func UpdateTodoContentController(c *gin.Context) {
+func UpdateTodoContentController(c fiber.Ctx) error {
 	var req UpdateTodoTextRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.Bind().JSON(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	err := todoService.updateTodoContent(req.ID, req.Text)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Todo text updated successfully"})
+	return c.JSON(fiber.Map{"message": "Todo text updated successfully"})
 }

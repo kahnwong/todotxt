@@ -14,7 +14,6 @@ WORKDIR /
 
 # hadolint ignore=DL3045
 COPY --from=build /todotxt .
-COPY frontend/dist/spa ./frontend/dist/spa
 
 EXPOSE 3000
 ENTRYPOINT ["/todotxt"]
