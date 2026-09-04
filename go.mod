@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/1set/todotxt v0.0.4
-	github.com/go-playground/validator/v10 v10.30.3
+	github.com/go-playground/validator/v10 v10.30.4
 	github.com/gofiber/fiber/v3 v3.5.0
 	github.com/rs/zerolog v1.35.1
 	github.com/samber/slog-fiber v1.22.2
