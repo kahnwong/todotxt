@@ -15,7 +15,7 @@ import (
 	"github.com/kahnwong/todotxt/api"
 	_ "github.com/kahnwong/todotxt/internal/logging"
 	slogfiber "github.com/samber/slog-fiber"
-	"github.com/sethvargo/go-envconfig"
+	"github.com/sethvargo/go-envconfig/v2"
 )
 
 var Config Env
