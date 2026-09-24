@@ -10,6 +10,7 @@ require (
 	github.com/samber/slog-fiber v1.22.2
 	github.com/samber/slog-zerolog/v2 v2.9.2
 	github.com/sethvargo/go-envconfig v1.4.3
+	github.com/sethvargo/go-envconfig/v2 v2.0.0
 )
 
 require (
