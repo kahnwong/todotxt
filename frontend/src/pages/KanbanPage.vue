@@ -44,20 +44,20 @@ const todoToday = ref<Todo[]>([]);
 const todoTinkering = ref<Todo[]>([]);
 const todoWork = ref<Todo[]>([]);
 
-// Fetch functions
+// Empty task lists may be returned as null; keep the refs array-valued.
 const fetchTodoToday = async () => {
-  const response = await axios.get("/api/todo/today");
-  todoToday.value = response.data as Todo[];
+  const response = await axios.get<Todo[] | null>("/api/todo/today");
+  todoToday.value = response.data ?? [];
 };
 
 const fetchTodoTinkering = async () => {
-  const response = await axios.get("/api/todo/tinkering");
-  todoTinkering.value = response.data as Todo[];
+  const response = await axios.get<Todo[] | null>("/api/todo/tinkering");
+  todoTinkering.value = response.data ?? [];
 };
 
 const fetchTodoWork = async () => {
-  const response = await axios.get("/api/todo/work");
-  todoWork.value = response.data as Todo[];
+  const response = await axios.get<Todo[] | null>("/api/todo/work");
+  todoWork.value = response.data ?? [];
 };
 
 // Use composables
